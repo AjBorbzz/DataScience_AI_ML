@@ -1,2 +1,10 @@
 venv/
 kaggle.json
+.tar.gz
+.jpg
+.png
+# Exclude all files containing ._frame in their names
+*._frame*
+
+# Exclude all files containing frame in their names
+*frame*

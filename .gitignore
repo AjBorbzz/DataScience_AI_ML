@@ -9,3 +9,4 @@ kaggle.json
 
 # Exclude all files containing frame in their names
 *frame*
+sample_datasets/

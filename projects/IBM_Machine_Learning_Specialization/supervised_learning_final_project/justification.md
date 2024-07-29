@@ -105,5 +105,3 @@ The IBM Machine Learning Specialization on Coursera is a credible and valuable c
 
 **5. Project Portfolio:**
 - **Statement:** "I have a portfolio of projects that showcase my ability to tackle real-world problems using machine learning. These projects highlight my technical skills and my ability to apply them to generate meaningful insights and solutions."
-
-By presenting the specialization in this manner, you can effectively communicate the value of your learning experience and how it has prepared you for a role as an AI Developer or Data Scientist.

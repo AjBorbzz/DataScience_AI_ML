@@ -6,9 +6,10 @@ import time
 import ollama
 from datetime import datetime, timedelta
 
-stock = yf.Ticker("AAPL")
-dow_jones = yf.Ticker("^DJI")
-data = stock.history(period="1d", interval="1m")
-dow_data = dow_jones.history(period="1d", interval="1m")
-
-print(dow_data)
+prompt = "Create a step by step streamlit tutorial for getting started."
+response = ollama.chat(
+            model="llama3",
+            messages=[{"role": "user", "content": prompt}]
+        )
+response_text = response['message']['content'].strip()
+print(response_text)

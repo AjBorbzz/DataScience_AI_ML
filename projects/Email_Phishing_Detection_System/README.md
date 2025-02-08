@@ -28,8 +28,11 @@ pip install aioimaplib aiohttp transformers torch
 
 ### :collision: Key Benefits of this Approach
 :white_check_mark: **Asynchronous Fetching:** IMAP requests run concurrently, reducing wait times.
+
 :white_check_mark: **Parallel Email Processing:** Multiple emails are analyzed **simultaneously**.
+
 :white_check_mark: **Scalable for Enterprises:** Can be extended with logging, alerting, or a database.
+
 :white_check_mark: **Integrates Deep Learning:** Uses `transformers` for accurate phishing detection.
 
 ### Next Steps (Enhancements)

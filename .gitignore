@@ -12,3 +12,4 @@ kaggle.json
 sample_datasets/
 .pdf
 PyTorch/data/*
+*.csv

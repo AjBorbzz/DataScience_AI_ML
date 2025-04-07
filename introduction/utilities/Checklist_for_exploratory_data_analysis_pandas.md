@@ -48,12 +48,3 @@ A compact, reusable, and beginner-friendly Python template for performing Explor
 ### 8. **Export Cleaned Data**
 - Save to a new CSV after cleaning
 
----
-
-## 🚀 How to Use the Template
-
-### 1. Clone or copy the code
-
-```bash
-git clone https://github.com/your-repo/eda-template.git
-cd eda-template

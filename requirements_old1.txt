@@ -119,15 +119,15 @@ sympy==1.13.3
 tenacity==9.0.0
 tensorboard==2.16.2
 tensorboard-data-server==0.7.2
-tensorflow==2.16.2
-tensorflow-io-gcs-filesystem==0.37.1
+# tensorflow==2.16.2
+# tensorflow-io-gcs-filesystem==0.37.1
 termcolor==2.5.0
 threadpoolctl==3.5.0
 tokenizers==0.21.0
 toml==0.10.2
-torch==2.2.2
-torchaudio==2.2.2
-torchvision==0.17.2
+# torch==2.2.2
+# torchaudio==2.2.2
+# torchvision==0.17.2
 tornado==6.4.1
 tqdm==4.67.1
 traitlets==5.14.3

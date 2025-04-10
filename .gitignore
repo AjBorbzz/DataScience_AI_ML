@@ -1,15 +1,16 @@
 venv/
 introduction/datasets/
 kaggle.json
-.tar.gz
-.jpg
-.png
+*.tar.gz
+*.jpg
+*.png
 # Exclude all files containing ._frame in their names
 *._frame*
 
 # Exclude all files containing frame in their names
 *frame*
 sample_datasets/
-.pdf
+*.pdf
 PyTorch/data/*
 *.csv
+sample_data/

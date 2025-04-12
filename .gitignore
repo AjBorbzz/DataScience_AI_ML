@@ -14,3 +14,4 @@ sample_datasets/
 PyTorch/data/*
 *.csv
 sample_data/
+*.tgz

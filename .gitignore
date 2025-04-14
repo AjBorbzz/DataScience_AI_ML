@@ -15,3 +15,4 @@ PyTorch/data/*
 *.csv
 sample_data/
 *.tgz
+my_dir/

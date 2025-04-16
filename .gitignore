@@ -16,3 +16,4 @@ PyTorch/data/*
 sample_data/
 *.tgz
 my_dir/
+fruits-360-original-size/

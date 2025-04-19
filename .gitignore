@@ -9,11 +9,12 @@ kaggle.json
 
 # Exclude all files containing frame in their names
 *frame*
-sample_datasets/
+**/sample_datasets/
 *.pdf
 PyTorch/data/*
 *.csv
-sample_data/
+**/sample_data/
 *.tgz
-my_dir/
-fruits-360-original-size/
+**/my_dir/
+**/fruits-360-original-size/
+**/datasets/

@@ -60,7 +60,7 @@ def generate_response(query, context):
     prompt = f"Query: {query}\nContext: {context}\nAnswer: "
     response = completion(
         model="gemini/gemini-1.5-flash",
-        messages=[{"content": prompt, "role": "user"}]
+        messages=[{"content": prompt, "role": "user"}],
         api_key=gemini_api
     )
     return response['choices'][0]['message']['content']

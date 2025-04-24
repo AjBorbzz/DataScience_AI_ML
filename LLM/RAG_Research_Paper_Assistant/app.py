@@ -68,6 +68,14 @@ def generate_response(query, context):
 
 def main():
     st.title("RAG-powered Research Paper Assistant")
+    option = st.radio("Choose an option", ("Upload PDFs", "Search arXiv"))
+    if option == "Upload PDFs":
+        uploaded_files = st.file_uploader("Upload PDF Files", accept_multiple_files=True, type=["pdf"])
+        if uploaded_files:
+            st.write("Processing uploaded files...")
+            all_text = extract_text_from_pdfs(uploaded_files)
+            collection = process_text_and_store(all_text)
+            st.success("PDF content processed and stored successfully!")
     
 
 if __name__ == "__main__":

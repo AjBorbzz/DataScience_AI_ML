@@ -19,3 +19,4 @@ PyTorch/data/*
 **/fruits-360-original-size/
 **/datasets/
 **/images/
+**.env

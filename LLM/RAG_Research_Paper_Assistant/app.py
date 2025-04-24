@@ -8,6 +8,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.tools import ArxivQueryRun
 from dotenv import load_dotenv
 from huggingface_hub import login
+import sys
+
+sys.modules['torch.classes'].__path__ = []
 
 
 load_dotenv()
@@ -44,7 +47,7 @@ def process_text_and_store(all_text):
         collection.add(
             ids=[f"chunk_{i}"],
             embeddings=[embedding.tolist()],
-            metadata=[{"source": "pdf", "chunk_id": i}],
+            metadatas=[{"source": "pdf", "chunk_id": i}],
             documents=[chunk]
         )
     return collection
@@ -52,7 +55,7 @@ def process_text_and_store(all_text):
 def semantic_search(query, collection, top_k=2):
     query_embedding = text_embedding_model.encode(query)
     results = collection.query(
-        query_embedding=[query_embedding.tolist()], n_results=top_k
+        query_embeddings=[query_embedding.tolist()], n_results=top_k
     )
     return results
 

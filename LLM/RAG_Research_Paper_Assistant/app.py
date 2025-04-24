@@ -43,7 +43,7 @@ def process_text_and_store(all_text):
         embedding = text_embedding_model.encode(chunk)
         collection.add(
             ids=[f"chunk_{i}"],
-            embeddings=[embedding.tolist()]
+            embeddings=[embedding.tolist()],
             metadata=[{"source": "pdf", "chunk_id": i}],
             documents=[chunk]
         )

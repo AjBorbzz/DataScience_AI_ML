@@ -88,29 +88,29 @@ def main():
                 st.subheader("Generated Response:")
                 st.write(response)
 
-        elif option == "Search arXiv":
-            query = st.text_input("Enter your search query for arXiv:")
+    elif option == "Search arXiv":
+        query = st.text_input("Enter your search query for arXiv:")
 
-            if st.button("Search ArXiv") and query:
-                arxiv_results = arxiv_tool.invoke(query)
-                st.session_state["arxiv_results"] = arxiv_results  # Store results in session
-                st.subheader("Search Results:")
-                st.write(arxiv_results)
+        if st.button("Search ArXiv") and query:
+            arxiv_results = arxiv_tool.invoke(query)
+            st.session_state["arxiv_results"] = arxiv_results  # Store results in session
+            st.subheader("Search Results:")
+            st.write(arxiv_results)
 
-                # Process the arXiv paper text and integrate it into RAG
-                collection = process_text_and_store(arxiv_results)
-                st.session_state["collection"] = collection  # Store collection in session
-                st.success("arXiv paper content processed and stored successfully!")
+            # Process the arXiv paper text and integrate it into RAG
+            collection = process_text_and_store(arxiv_results)
+            st.session_state["collection"] = collection  # Store collection in session
+            st.success("arXiv paper content processed and stored successfully!")
 
-            # Only allow querying if search has been performed
-            if "arxiv_results" in st.session_state and "collection" in st.session_state:
-                query = st.text_input("Ask a question about the paper:")
-                if st.button("Execute Query on Paper") and query:
-                    results = semantic_search(query, st.session_state["collection"])
-                    context = "\n".join(results['documents'][0])
-                    response = generate_response(query, context)
-                    st.subheader("Generated Response:")
-                    st.write(response)
+        # Only allow querying if search has been performed
+        if "arxiv_results" in st.session_state and "collection" in st.session_state:
+            query = st.text_input("Ask a question about the paper:")
+            if st.button("Execute Query on Paper") and query:
+                results = semantic_search(query, st.session_state["collection"])
+                context = "\n".join(results['documents'][0])
+                response = generate_response(query, context)
+                st.subheader("Generated Response:")
+                st.write(response)
     
 
 if __name__ == "__main__":

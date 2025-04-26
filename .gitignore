@@ -21,3 +21,4 @@ PyTorch/data/*
 **/images/
 .env
 **/chroma_db/
+**/.env

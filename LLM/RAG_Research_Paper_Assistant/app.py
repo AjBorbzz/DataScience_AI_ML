@@ -68,6 +68,14 @@ def generate_response(query, context):
     )
     return response['choices'][0]['message']['content']
 
+@st.cache_data
+def execute_query_frm_input(query, collection):
+    results = semantic_search(query, collection)
+    context = "\n".join(results['documents'][0])
+    response = generate_response(query, context)
+    st.subheader("Generated Response:")
+    st.write(response)
+
 
 def main():
     st.title("RAG-powered Research Paper Assistant")
@@ -84,6 +92,7 @@ def main():
         """)
 
 
+
     if option == "Upload PDFs":
         uploaded_files = st.sidebar.file_uploader("Upload PDF Files", accept_multiple_files=True, type=["pdf"])
         if uploaded_files:
@@ -94,11 +103,7 @@ def main():
 
             query = st.text_input("Enter your query: ")
             if st.button("Execute Query") and query:
-                results = semantic_search(query, collection)
-                context = "\n".join(results['documents'][0])
-                response = generate_response(query, context)
-                st.subheader("Generated Response:")
-                st.write(response)
+                execute_query_frm_input(query, collection)
 
     elif option == "Search arXiv":
         query = st.text_input("Enter your search query for arXiv:")

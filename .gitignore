@@ -22,4 +22,4 @@ PyTorch/data/*
 .env
 **/chroma_db/
 **/.env
-**/.sqlite3
+**/chroma.sqlite3

@@ -72,8 +72,6 @@ def generate_response(query, context):
 def main():
     st.title("RAG-powered Research Paper Assistant")
 
-    
-    col1, col2 = st.columns(2)
     st.sidebar.write("## Upload and download :gear:")
 
     option = st.sidebar.radio("Choose an option", ("Upload PDFs", "Search arXiv"))
@@ -95,7 +93,7 @@ def main():
             st.success("PDF content processed and stored successfully!")
 
             query = st.text_input("Enter your query: ")
-            if st.sidebar.button("Execute Query") and query:
+            if st.button("Execute Query") and query:
                 results = semantic_search(query, collection)
                 context = "\n".join(results['documents'][0])
                 response = generate_response(query, context)

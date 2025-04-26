@@ -71,8 +71,7 @@ def process_text_and_store(all_text):
     return collection
 
 # ✅ Cached version
-@st.cache_data
-
+@st.cache_resource
 def process_text_and_store_cached(text_hash, all_text):
     return process_text_and_store(all_text)
 

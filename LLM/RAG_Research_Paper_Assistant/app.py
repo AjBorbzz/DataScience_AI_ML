@@ -71,9 +71,23 @@ def generate_response(query, context):
 
 def main():
     st.title("RAG-powered Research Paper Assistant")
-    option = st.radio("Choose an option", ("Upload PDFs", "Search arXiv"))
+
+    
+    col1, col2 = st.columns(2)
+    st.sidebar.write("## Upload and download :gear:")
+
+    option = st.sidebar.radio("Choose an option", ("Upload PDFs", "Search arXiv"))
+    with st.sidebar.expander("ℹ️ PDF Guidelines"):
+        st.write("""
+        - Upload arXiv article/publication
+        - Large images will be automatically resized
+        - Supported formats: PNG, JPG, JPEG
+        - Processing time depends on image size
+        """)
+
+
     if option == "Upload PDFs":
-        uploaded_files = st.file_uploader("Upload PDF Files", accept_multiple_files=True, type=["pdf"])
+        uploaded_files = st.sidebar.file_uploader("Upload PDF Files", accept_multiple_files=True, type=["pdf"])
         if uploaded_files:
             st.write("Processing uploaded files...")
             all_text = extract_text_from_pdfs(uploaded_files)
@@ -81,7 +95,7 @@ def main():
             st.success("PDF content processed and stored successfully!")
 
             query = st.text_input("Enter your query: ")
-            if st.button("Execute Query") and query:
+            if st.sidebar.button("Execute Query") and query:
                 results = semantic_search(query, collection)
                 context = "\n".join(results['documents'][0])
                 response = generate_response(query, context)

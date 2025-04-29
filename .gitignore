@@ -24,3 +24,4 @@ PyTorch/data/*
 **/.env
 **/chroma.sqlite3
 **/.pkl
+*.pkl

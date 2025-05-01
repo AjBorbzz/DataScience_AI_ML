@@ -25,3 +25,4 @@ PyTorch/data/*
 **/chroma.sqlite3
 **/.pkl
 *.pkl
+**/.csv

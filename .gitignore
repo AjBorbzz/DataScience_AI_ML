@@ -27,3 +27,6 @@ PyTorch/data/*
 *.pkl
 **/.csv
 **/.DS_Store
+**/data/
+PyTorch/data/FashionMNIST/
+**.gz

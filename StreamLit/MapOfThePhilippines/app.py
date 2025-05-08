@@ -69,7 +69,9 @@ layer = pdk.Layer(
     data=pd.DataFrame([{"lat": city_data["lat"], "lon": city_data["lon"]}]),
     get_position='[lon, lat]',
     get_radius=8000,
-    get_fill_color=[0, 128, 255],
+    get_fill_color=[0, 0, 0, 0],  # Transparent fill
+    get_line_color=[0, 128, 255, 255],  # Blue border
+    line_width_min_pixels=2,  # Border thickness
     pickable=True,
 )
 

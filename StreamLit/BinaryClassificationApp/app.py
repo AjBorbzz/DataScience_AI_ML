@@ -6,7 +6,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
+# from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import precision_score, recall_score 
 
 def main():
@@ -15,7 +16,7 @@ def main():
     st.markdown("Are your mushrooms edible or poisonous? ")
     st.sidebar.markdown("Are your mushrooms edible or poisonous? ")
 
-    @st.cache(persist=True)
+    @st.cache_data(persist=True)
     def load_data():
         data = pd.read_csv("./mushrooms.csv")
         label = LabelEncoder()
@@ -24,7 +25,7 @@ def main():
 
         return data
 
-    @st.cache(persist=True)
+    @st.cache_data(persist=True)
     def split(df):
         y = df.type
         x = df.drop(columns=['type'])
@@ -34,18 +35,18 @@ def main():
     def plot_metrics(metrics_list):
         if 'Confusion Matrix' in  metrics_list:
             st.subheader("Confusion Matrix")
-            plot_confusion_matrix(model, x_test, y_test, display_labels=class_names)
+            ConfusionMatrixDisplay.from_estimator(model, x_test, y_test, display_labels=class_names)
             st.pyplot()
 
-        if 'ROC Curve' in metrics_list:
-            st.subheader("ROC Curve")
-            plot_roc_curve(model, x_test, y_test)
-            st.pyplot()
+        # if 'ROC Curve' in metrics_list:
+        #     st.subheader("ROC Curve")
+        #     plot_roc_curve(model, x_test, y_test)
+        #     st.pyplot()
 
-        if 'Precision-Recall Curve' in metrics_list:
-            st.subheader("Precision-Recall Curve")
-            plot_precision_recall_curve(model, x_test, y_test)
-            st.pyplot()
+        # if 'Precision-Recall Curve' in metrics_list:
+        #     st.subheader("Precision-Recall Curve")
+        #     plot_precision_recall_curve(model, x_test, y_test)
+        #     st.pyplot()
 
     def fit_and_plot(model):
         model.fit(x_train, y_train)

@@ -71,7 +71,7 @@ def main():
         
         plot_metrics(metrics)
 
-    df = load_data()
+    df = load_data()    
     x_train, x_test, y_train, y_test = split(df)
     class_names = ['edible', 'poisonous']
 

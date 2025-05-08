@@ -22,13 +22,12 @@ def main():
         label = LabelEncoder()
         for col in data.columns:
             data[col] = label.fit_transform(data[col])
-
         return data
 
     @st.cache_data(persist=True)
     def split(df):
-        y = df.type
-        x = df.drop(columns=['type'])
+        y = df['class']
+        x = df.drop(columns=['class'])
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0)
         return x_train, x_test, y_train, y_test
 
@@ -52,9 +51,14 @@ def main():
         model.fit(x_train, y_train)
         accuracy = model.score(x_test, y_test)
         y_pred = model.predict(x_test)
-        st.write("Accuracy: ", accuracy.round(2))
-        st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2)) 
-        st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+        # st.write("Accuracy: ", accuracy.round(2))
+        # st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2)) 
+        # st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
+
+        st.write(f"Accuracy: {accuracy * 100:.2f}%")
+        st.write(f"Precision: {precision_score(y_test, y_pred, labels=class_names) * 100:.2f}%") 
+        st.write(f"Recall: {recall_score(y_test, y_pred, labels=class_names) * 100:.2f}%")
+        
         plot_metrics(metrics)
 
     df = load_data()
@@ -72,7 +76,7 @@ def main():
         C = st.sidebar.number_input("C (Regularization parameter)", 
                                     0.01,
                                     10.0,
-                                    steps=0.01,
+                                    step=0.01,
                                     key='C')
         kernel = st.sidebar.radio("kernel",
                                   ("rbf", "linear"),
@@ -94,7 +98,7 @@ def main():
         C = st.sidebar.number_input("C (Regularization parameter)", 
                                     0.01,
                                     10.0,
-                                    steps=0.01,
+                                    step=0.01,
                                     key='C_LR')
         max_iter = st.sidebar.slider("Maximum number of iterations",
                                    100,500, key='max_iter')
@@ -110,7 +114,7 @@ def main():
     if classifier == "Random Forest":
         st.sidebar.subheader("Model Hyperparameters")
         n_estimators = st.sidebar.number_input("The number of tress in the forest",
-                                               100, 5000, steps=10,
+                                               100, 5000, step=10,
                                               key='n_estimators')
 
         max_depth = st.sidebar.number_input("The maximum depth of the tree", 
@@ -136,9 +140,16 @@ def main():
         st.subheader("Mushroom Data Set (Classification)")
         st.write(df)
 
-
+def test_env():
+    data = pd.read_csv("./mushrooms.csv")
+    label = LabelEncoder()
+    for col in data.columns:
+        data[col] = label.fit_transform(data[col])
+    print(data.head())
+    print(data['class'])
 
 if __name__ == '__main__':
     main()
+    # test_env()
 
 

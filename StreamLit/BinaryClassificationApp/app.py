@@ -47,23 +47,27 @@ def main():
             RocCurveDisplay.from_estimator(model, x_test, y_test, ax=ax)
             st.pyplot(fig)
 
-        if 'Precision-Recall Curve' in metrics_list:
+        if 'Precision-Recall' in metrics_list:
             st.subheader("Precision-Recall Curve")
             fig, ax = plt.subplots()
-            PrecisionRecallDisplay(model, x_test, y_test, ax=ax)
+            PrecisionRecallDisplay.from_estimator(model, x_test, y_test, ax=ax)
             st.pyplot(fig)
 
     def fit_and_plot(model):
         model.fit(x_train, y_train)
         accuracy = model.score(x_test, y_test)
         y_pred = model.predict(x_test)
-        # st.write("Accuracy: ", accuracy.round(2))
-        # st.write("Precision: ", precision_score(y_test, y_pred, labels=class_names).round(2)) 
-        # st.write("Recall: ", recall_score(y_test, y_pred, labels=class_names).round(2))
 
-        st.write(f"Accuracy: {accuracy * 100:.2f}%")
-        st.write(f"Precision: {precision_score(y_test, y_pred, labels=class_names) * 100:.2f}%") 
-        st.write(f"Recall: {recall_score(y_test, y_pred, labels=class_names) * 100:.2f}%")
+        precision = precision_score(y_test, y_pred, labels=class_names)
+        recall = recall_score(y_test, y_pred, labels=class_names)
+        st.subheader("📊 Model Evaluation Metrics")
+
+        # Layout in columns for better UI
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric(label="🎯 Accuracy", value=f"{accuracy * 100:.2f}%")
+        col2.metric(label="✅ Precision", value=f"{precision * 100:.2f}%")
+        col3.metric(label="📥 Recall", value=f"{recall * 100:.2f}%")
         
         plot_metrics(metrics)
 

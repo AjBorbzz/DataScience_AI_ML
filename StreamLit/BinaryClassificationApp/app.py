@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVC
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -34,8 +35,12 @@ def main():
     def plot_metrics(metrics_list):
         if 'Confusion Matrix' in  metrics_list:
             st.subheader("Confusion Matrix")
-            ConfusionMatrixDisplay.from_estimator(model, x_test, y_test, display_labels=class_names)
-            st.pyplot()
+            fig, ax = plt.subplots()
+            ConfusionMatrixDisplay.from_estimator(
+            model, x_test, y_test, display_labels=class_names, ax=ax
+                )
+        
+            st.pyplot(fig)
 
         # if 'ROC Curve' in metrics_list:
         #     st.subheader("ROC Curve")

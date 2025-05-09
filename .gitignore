@@ -21,7 +21,7 @@ PyTorch/data/*
 **/images/
 .env
 **/chroma_db/
-**/.env
+/.env
 **/chroma.sqlite3
 **/.pkl
 *.pkl

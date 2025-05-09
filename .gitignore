@@ -1,32 +1,42 @@
+# Ignore Python virtual environments
 **/venv/
-introduction/datasets/
-kaggle.json
-*.tar.gz
-*.jpg
-*.png
-# Exclude all files containing ._frame in their names
-*._frame*
 
-# Exclude all files containing frame in their names
-*frame*
+# Ignore datasets and sample data
+**/datasets/
+introduction/datasets/
 **/sample_datasets/
-*.pdf
-PyTorch/data/*
-*.csv
 **/sample_data/
-*.tgz
+**/data/
+**/images/
 **/my_dir/
 **/fruits-360-original-size/
-**/datasets/
-**/images/
-.env
-**/chroma_db/
-/.env
-**/chroma.sqlite3
-**/.pkl
-*.pkl
-**/.csv
-**/.DS_Store
-**/data/
+PyTorch/data/
 PyTorch/data/FashionMNIST/
+
+# Ignore data files
+*.csv
+**/.csv
+*.pdf
+*.tar.gz
+*.tgz
 **.gz
+*.pkl
+**/.pkl
+**/chroma.sqlite3
+**/chroma_db/
+
+# Ignore media files
+*.jpg
+*.png
+
+# Ignore files with frame in the name
+*frame*
+*._frame*
+
+# Ignore config and secret files
+kaggle.json
+**/.env
+**/.env.*
+
+# Ignore OS or IDE metadata
+**/.DS_Store

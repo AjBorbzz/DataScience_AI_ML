@@ -40,3 +40,5 @@ kaggle.json
 
 # Ignore OS or IDE metadata
 **/.DS_Store
+
+**/node_modules/

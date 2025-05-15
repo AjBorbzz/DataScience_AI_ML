@@ -42,3 +42,6 @@ kaggle.json
 **/.DS_Store
 
 **/node_modules/
+
+**/FashionMNIST
+

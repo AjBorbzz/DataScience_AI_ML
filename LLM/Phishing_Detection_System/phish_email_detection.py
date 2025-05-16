@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import anthropic 
-
+from sample_data import sample_email_data
 
 load_dotenv()
 
@@ -10,7 +10,6 @@ client = anthropic.Anthropic()
 
 
 def process_phishing_detection(data):
-
     prompt_ = f"""
     You are a cybersecurity threat detection assistant. Analyze the email data below and decide if it's phishing or benign.
 
@@ -29,25 +28,25 @@ def process_phishing_detection(data):
         3. Justify the conclusion briefly based on the indicators.
 
         ### Email Data
-        Subject: {email_subject}  
-        From: {from_name} <{from_address}>  
-        To: {to_address}  
-        Headers: {headers}  
+        Subject: {data.get("email_subject")}  
+        From: {data["from_name"]} <{data["from_address"]}>  
+        To: {data["to_address"]}  
+        Headers: {data["headers"]}  
         Body:  
-        {email_body}
+        {data["email_body"]}
 
-        Attachments: {attachment_names_and_hashes}  
-        URLs: {list_of_urls}  
-        QR Codes (decoded): {qr_data}
+        Attachments: {data["attachment_names_and_hashes"]}  
+        URLs: {data["list_of_urls"]}  
+        QR Codes (decoded): {data["qr_data"]}
 
         ### Output
         - Verdict: [Phishing | Suspicious | Benign]  
         - Confidence (0–100%)  
         - Reasoning:  
-        - {short_reason_1}  
-        - {short_reason_2}  
+        - (short_reason_1)  
+        - (short_reason_2)  
         - IOC Enrichment:  
-        - {indicator}: {context}
+        - (indicator): (Context)
 
     """
 
@@ -59,4 +58,11 @@ def process_phishing_detection(data):
                                     messages=[{"role": "user","content": prompt_}],
                                     stream=False,
                                         )
-    print(message)
+    return message
+
+# print(sample_email_data[0])
+
+
+phishing_detection_message = process_phishing_detection(sample_email_data[0])
+
+print(phishing_detection_message)

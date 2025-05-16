@@ -27,7 +27,7 @@ PyTorch/data/FashionMNIST/
 
 # Ignore media files
 *.jpg
-*.png
+# *.png
 
 # Ignore files with frame in the name
 *frame*

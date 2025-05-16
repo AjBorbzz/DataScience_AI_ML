@@ -1,6 +1,6 @@
 # Phishing Email Analysis Dashboard
 
-![Dashboard Screenshot](https://via.placeholder.com/800x450)
+![Dashboard Screenshot]()
 
 ## Overview
 

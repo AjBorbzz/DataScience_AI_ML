@@ -1,6 +1,6 @@
 # Phishing Email Analysis Dashboard
 
-![Dashboard Screenshot]()
+![Dashboard Screenshot](https://github.com/AjBorbzz/DataScience_AI_ML/blob/main/LLM/Phishing_Detection_System/Phishing_Email_Detection/dashboard.png)
 
 ## Overview
 

@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import anthropic 
-from sample_data import sample_email_data
+from LLM.Phishing_Detection_System.Phishing_Email_Detection.sample_data import sample_email_data
 
 load_dotenv()
 

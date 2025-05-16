@@ -66,3 +66,77 @@ def process_phishing_detection(data):
 phishing_detection_message = process_phishing_detection(sample_email_data[0])
 
 print(phishing_detection_message)
+
+
+### Example output
+"""
+Message(id='msg_01KPefmuQTE9G3ncMPZHxQ8r', 
+        content=[TextBlock(
+                citations=None, 
+                text='I\'ll analyze this email carefully using the structured threat detection approach.\n\n
+                ## Analysis\n\n
+                ### Email Data Assessment\n
+                - **Subject**: "Urgent: Your Account Has Been Locked!" uses urgency tactics common in phishing\n
+                - **Sender**: Claims to be Chase Bank but uses a suspicious domain (chase-verification.com)\n
+                - **Authentication**: All email authentication mechanisms failed (SPF, DKIM, DMARC)\n
+                - **Content**: Brief message with urgent call to action and suspicious link\n
+                - **URL**: Domain "chase-verification-login.com" is not an official Chase Bank domain\n\n
+                ### IOC Enrichment\n
+                - **Domain analysis**: "chase-verification.com" \n
+                   - Not a legitimate Chase domain (legitimate would be chase.com)\n 
+                 - Uses hyphenated domain naming pattern common in phishing\n
+                 - **URL analysis**: "http://chase-verification-login.com"\n
+                   - Uses HTTP instead of HTTPS (lacks encryption)\n  - Domain mimics Chase Bank but is not authentic\n
+                   - Likely a credential harvesting page\n\n## Output\n\n
+                 - **Verdict**: Phishing\n
+                 - **Confidence**: 95%\n- **Reasoning**:\n
+                   - Email fails all authentication checks (SPF, DKIM, DMARC)\n
+                   - Sender domain "chase-verification.com" is not an official Chase domain\n
+                   - Uses classic phishing tactics: urgency, fear, and impersonation of a financial institution\n
+                   - Contains suspicious URL that mimics the bank\'s name but on an unofficial domain\n
+                   - Lacks specific customer information that would be in legitimate communications\n\n
+                 - **IOC Enrichment**:\n
+                   - chase-verification.com: Suspicious domain mimicking Chase Bank, not affiliated with legitimate financial institution\n
+                   - chase-verification-login.com: Likely credential harvesting site, not an official Chase domain\n
+                   - SPF/DKIM/DMARC failures: Indicates the email is not actually from the claimed sender\n\n
+                 This is a clear phishing attempt designed to trick users into believing their Chase account has security issues requiring immediate action, with the goal of stealing login credentials.', 
+                type='text')],
+                model='claude-3-7-sonnet-20250219', 
+                role='assistant',
+                stop_reason='end_turn', 
+                stop_sequence=None, 
+                type='message', 
+                usage=Usage(cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=432, output_tokens=471, server_tool_use=None)
+        )
+"""
+
+sample_output = """
+            I\'ll analyze this email carefully using the structured threat detection approach.\n\n
+                ## Analysis\n\n
+                ### Email Data Assessment\n
+                - **Subject**: "Urgent: Your Account Has Been Locked!" uses urgency tactics common in phishing\n
+                - **Sender**: Claims to be Chase Bank but uses a suspicious domain (chase-verification.com)\n
+                - **Authentication**: All email authentication mechanisms failed (SPF, DKIM, DMARC)\n
+                - **Content**: Brief message with urgent call to action and suspicious link\n
+                - **URL**: Domain "chase-verification-login.com" is not an official Chase Bank domain\n\n
+                ### IOC Enrichment\n
+                - **Domain analysis**: "chase-verification.com" \n
+                   - Not a legitimate Chase domain (legitimate would be chase.com)\n 
+                 - Uses hyphenated domain naming pattern common in phishing\n
+                 - **URL analysis**: "http://chase-verification-login.com"\n
+                   - Uses HTTP instead of HTTPS (lacks encryption)\n  - Domain mimics Chase Bank but is not authentic\n
+                   - Likely a credential harvesting page\n\n## Output\n\n
+                 - **Verdict**: Phishing\n
+                 - **Confidence**: 95%\n- **Reasoning**:\n
+                   - Email fails all authentication checks (SPF, DKIM, DMARC)\n
+                   - Sender domain "chase-verification.com" is not an official Chase domain\n
+                   - Uses classic phishing tactics: urgency, fear, and impersonation of a financial institution\n
+                   - Contains suspicious URL that mimics the bank\'s name but on an unofficial domain\n
+                   - Lacks specific customer information that would be in legitimate communications\n\n
+                 - **IOC Enrichment**:\n
+                   - chase-verification.com: Suspicious domain mimicking Chase Bank, not affiliated with legitimate financial institution\n
+                   - chase-verification-login.com: Likely credential harvesting site, not an official Chase domain\n
+                   - SPF/DKIM/DMARC failures: Indicates the email is not actually from the claimed sender\n\n
+                 This is a clear phishing attempt designed to trick users into believing their Chase account has security issues requiring immediate action, with the goal of stealing login credentials.
+
+"""

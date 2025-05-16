@@ -67,3 +67,11 @@ Deploying LLMs for phishing detection raises ethical concerns, including:
 ## Conclusion
 LLM-powered phishing detection represents a significant advancement in email security. By leveraging fine-tuned models, privacy-focused frameworks like Ollama, and real-time detection with FastAPI, organizations can significantly enhance their defense against phishing attacks. Ongoing research and ethical deployment considerations remain critical for the future development of AI-driven cybersecurity solutions.
 
+
+
+### Integration Tips:
+* Call this prompt dynamically using your automation platform (e.g., XSOAR or Python script).
+
+* Feed in real-time extracted indicators and headers from your email parsing engine.
+
+* Post-process the LLM output to trigger enrichment via tools like VirusTotal, AbuseIPDB, or URLScan.

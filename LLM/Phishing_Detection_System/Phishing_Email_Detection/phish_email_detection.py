@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
 import anthropic 
-from LLM.Phishing_Detection_System.Phishing_Email_Detection.sample_data import sample_email_data
+from sample_data import sample_email_data
+import re
+
 
 load_dotenv()
 
@@ -58,8 +60,49 @@ def process_phishing_detection(data):
                                     messages=[{"role": "user","content": prompt_}],
                                     stream=False,
                                         )
-    return message
+    
+    print(type(message))
+    response = message.content[0].text
+    return response
 
-# phishing_detection_message = process_phishing_detection(sample_email_data[0])
-# print(phishing_detection_message)
+phishing_detection_message = process_phishing_detection(sample_email_data[1])
+print(phishing_detection_message)
 
+
+"""
+Message(id='msg_01VpHmSLFc3jzt5wdbQH3QKW', 
+        content=[TextBlock(citations=None, 
+        text='I\'ll analyze this email for phishing indicators:\n\n## Analysis Process\n\n
+        First, I need to evaluate all the provided data points for potential phishing indicators and enrich any threat indicators with intelligence.\n\n
+        ### Email Data Analysis:\n\n1. **Sender:**\n   - Domain "paypal-secure.com" is suspicious - legitimate PayPal emails come from paypal.com\n
+        - This appears to be a typosquat or lookalike domain\n\n2. **Email Headers:**\n   
+        - SPF: softfail - indicates the sender IP is not authorized to send from this domain\n   
+        - DKIM: fail - email was altered in transit or signature is invalid\n   
+        - DMARC: fail - email fails authentication policies\n\n3. **Subject/Body:**\n   
+        - Creates urgency ("within 24 hours")\n   - Threatens penalties\n   
+        - Lacks specific details about the invoice\n   
+        - Generic greeting without recipient personalization\n\n4. **Attachment:**\n   
+        - invoice_1245.pdf with SHA256 hash starting with e3b0c44298fc1c14...ffb6c1\n   
+        - The partial hash shown matches the SHA256 of an empty file (e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)\n   
+        - This is suspicious as a legitimate invoice would not be an empty file\n\n
+        ### Output\n\n
+        - **Verdict: Phishing**\n
+        - **Confidence: 95%**\n
+        - **Reasoning:**\n  
+        - Email originates from a lookalike domain (paypal-secure.com) not the legitimate PayPal domain\n
+        - All email authentication mechanisms (SPF, DKIM, DMARC) have failed\n  
+        - Uses urgent language and threats to motivate immediate action\n  
+        - Attachment hash appears to be for an empty file, likely malicious\n  \n
+        - **IOC Enrichment:**\n  
+        - Domain "paypal-secure.com": Typosquat of legitimate PayPal domain, likely created for phishing\n  
+        - Attachment SHA256 (e3b0c44298fc1c14...): Matches hash of empty file, suspicious for malware payload\n\n
+        This email exhibits multiple strong indicators of a phishing attempt designed to appear as if it\'s from PayPal to trick the recipient into opening a potentially malicious attachment.', 
+        type='text')], 
+        model='claude-3-7-sonnet-20250219', 
+        role='assistant', 
+        stop_reason='end_turn', 
+        stop_sequence=None, 
+        type='message', 
+        usage=Usage(cache_creation_input_tokens=0, 
+        cache_read_input_tokens=0, input_tokens=437, output_tokens=533, server_tool_use=None))
+"""

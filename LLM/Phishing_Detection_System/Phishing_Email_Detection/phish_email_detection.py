@@ -33,6 +33,33 @@ def extract_message_output(text):
     }
 
 
+sample_output_2 = """
+I'll analyze this email for threat indicators as requested.
+
+## Analysis of Email Data
+
+After reviewing the provided email data, I can provide the following threat assessment:
+
+### Verdict: Phishing
+### Confidence: 90%
+
+### Reasoning:
+- The sender domain "paypal-secure.com" is suspicious - legitimate PayPal emails come from paypal.com, not variants with hyphens or additional words
+- Complete authentication failure (SPF softfail, DKIM fail, DMARC fail) indicates the sender is not authorized
+- Urgent language about penalties within 24 hours is a classic pressure tactic used in phishing
+- Generic greeting and vague content about an invoice without specific details is typical of phishing attempts
+
+### IOC Enrichment:
+- Domain: paypal-secure.com - This appears to be a typosquat domain designed to impersonate PayPal
+- Email authentication: All three email authentication mechanisms (SPF, DKIM, DMARC) failed, strongly suggesting the email is not from a legitimate sender
+- Attachment: invoice_1245.pdf - The provided hash appears to be incomplete, but PDF attachments are common vectors for malware delivery
+- SHA256 hash: e3b0c44298fc1c14...ffb6c1 (truncated) - Without the complete hash, proper enrichment is limited, but this should be scanned in a sandbox environment
+
+This email contains multiple indicators of a phishing attempt impersonating PayPal with the goal of delivering potentially malicious content via the PDF attachment.
+
+"""
+
+
 def process_phishing_detection(data):
     prompt_ = f"""
     You are a cybersecurity threat detection assistant. Analyze the email data below and decide if it's phishing or benign.
@@ -87,9 +114,16 @@ def process_phishing_detection(data):
     response = message.content[0].text
     return response
 
-phishing_detection_message = process_phishing_detection(sample_email_data[1])
-print(phishing_detection_message)
+# phishing_detection_message = process_phishing_detection(sample_email_data[1])
+# print(phishing_detection_message)
 
+def main():
+    # run sample
+    print(extract_message_output(sample_output_2))
+
+
+if __name__ == '__main__':
+    main()
 
 # Sample return statement (Complete) - Sample 2:
 """
@@ -131,28 +165,3 @@ Message(id='msg_01VpHmSLFc3jzt5wdbQH3QKW',
 """
 
 # Sample Return Statement from Sample 2
-sample_output_2 = """
-I'll analyze this email for threat indicators as requested.
-
-## Analysis of Email Data
-
-After reviewing the provided email data, I can provide the following threat assessment:
-
-### Verdict: Phishing
-### Confidence: 90%
-
-### Reasoning:
-- The sender domain "paypal-secure.com" is suspicious - legitimate PayPal emails come from paypal.com, not variants with hyphens or additional words
-- Complete authentication failure (SPF softfail, DKIM fail, DMARC fail) indicates the sender is not authorized
-- Urgent language about penalties within 24 hours is a classic pressure tactic used in phishing
-- Generic greeting and vague content about an invoice without specific details is typical of phishing attempts
-
-### IOC Enrichment:
-- Domain: paypal-secure.com - This appears to be a typosquat domain designed to impersonate PayPal
-- Email authentication: All three email authentication mechanisms (SPF, DKIM, DMARC) failed, strongly suggesting the email is not from a legitimate sender
-- Attachment: invoice_1245.pdf - The provided hash appears to be incomplete, but PDF attachments are common vectors for malware delivery
-- SHA256 hash: e3b0c44298fc1c14...ffb6c1 (truncated) - Without the complete hash, proper enrichment is limited, but this should be scanned in a sandbox environment
-
-This email contains multiple indicators of a phishing attempt impersonating PayPal with the goal of delivering potentially malicious content via the PDF attachment.
-
-"""

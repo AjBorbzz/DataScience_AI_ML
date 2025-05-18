@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+
 import re
 
 # Set page configuration
@@ -11,66 +12,11 @@ st.set_page_config(
 )
 
 # Custom CSS for better styling
-st.markdown("""
-<style>
-    .header-container {
-        background-color: #1E3A8A;
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        color: white;
-        margin-bottom: 1rem;
-    }
-    .metric-card {
-        background-color: #f0f2f6;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .metric-label {
-        font-size: 1rem;
-        color: #555;
-    }
-    .metric-value {
-        font-size: 1.8rem;
-        font-weight: bold;
-    }
-    .highlight {
-        background-color: #FFE2E2;
-        padding: 0.2rem 0.5rem;
-        border-radius: 0.3rem;
-        font-weight: bold;
-    }
-    .security-passed {
-        color: #10B981;
-        font-weight: bold;
-    }
-    .security-failed {
-        color: #EF4444;
-        font-weight: bold;
-    }
-    .indicator-high {
-        color: #EF4444;
-        font-weight: bold;
-    }
-    .indicator-medium {
-        color: #F59E0B;
-        font-weight: bold;
-    }
-    .indicator-low {
-        color: #10B981;
-        font-weight: bold;
-    }
-    .sidebar-content {
-        padding: 1rem;
-    }
-    .info-box {
-        background-color: #E0F2FE;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-    }
-</style>
-""", unsafe_allow_html=True)
+def load_css(file_path):
+    with open(file_path) as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css("styles/custom.css")
 
 # Sample phishing analysis output
 sample_output = """

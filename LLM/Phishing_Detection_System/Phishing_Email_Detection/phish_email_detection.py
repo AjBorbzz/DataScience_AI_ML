@@ -10,6 +10,28 @@ load_dotenv()
 claude_api = os.getenv("ANTHROPIC_API_KEY")
 client = anthropic.Anthropic()
 
+def extract_message_output(text):
+    verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
+    confidence = re.search(r"### Confidence:\s*(\d+)%", text).group(1)
+    reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))
+
+    domain = re.search(r"- Domain:\s*(.*?)\s*-", text).group(1).strip()
+    auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text).group(1).strip()
+    attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text).group(1).strip()
+    sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text).group(1).strip()
+
+    return {
+        "Verdict": verdict,
+        "Confidence": int(confidence),
+        "Reasoning": reasoning,
+        "IOC Enrichment": {
+            "Domain": domain,
+            "Email Authentication": auth,
+            "Attachment": attachment,
+            "SHA256 Hash": sha256
+        }
+    }
+
 
 def process_phishing_detection(data):
     prompt_ = f"""
@@ -69,6 +91,7 @@ phishing_detection_message = process_phishing_detection(sample_email_data[1])
 print(phishing_detection_message)
 
 
+# Sample return statement (Complete) - Sample 2:
 """
 Message(id='msg_01VpHmSLFc3jzt5wdbQH3QKW', 
         content=[TextBlock(citations=None, 
@@ -105,4 +128,31 @@ Message(id='msg_01VpHmSLFc3jzt5wdbQH3QKW',
         type='message', 
         usage=Usage(cache_creation_input_tokens=0, 
         cache_read_input_tokens=0, input_tokens=437, output_tokens=533, server_tool_use=None))
+"""
+
+# Sample Return Statement from Sample 2
+sample_output_2 = """
+I'll analyze this email for threat indicators as requested.
+
+## Analysis of Email Data
+
+After reviewing the provided email data, I can provide the following threat assessment:
+
+### Verdict: Phishing
+### Confidence: 90%
+
+### Reasoning:
+- The sender domain "paypal-secure.com" is suspicious - legitimate PayPal emails come from paypal.com, not variants with hyphens or additional words
+- Complete authentication failure (SPF softfail, DKIM fail, DMARC fail) indicates the sender is not authorized
+- Urgent language about penalties within 24 hours is a classic pressure tactic used in phishing
+- Generic greeting and vague content about an invoice without specific details is typical of phishing attempts
+
+### IOC Enrichment:
+- Domain: paypal-secure.com - This appears to be a typosquat domain designed to impersonate PayPal
+- Email authentication: All three email authentication mechanisms (SPF, DKIM, DMARC) failed, strongly suggesting the email is not from a legitimate sender
+- Attachment: invoice_1245.pdf - The provided hash appears to be incomplete, but PDF attachments are common vectors for malware delivery
+- SHA256 hash: e3b0c44298fc1c14...ffb6c1 (truncated) - Without the complete hash, proper enrichment is limited, but this should be scanned in a sandbox environment
+
+This email contains multiple indicators of a phishing attempt impersonating PayPal with the goal of delivering potentially malicious content via the PDF attachment.
+
 """

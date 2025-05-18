@@ -18,46 +18,6 @@ def load_css(file_path):
 
 load_css("styles/custom.css")
 
-# Sample phishing analysis output
-sample_output = """
-I'll analyze this email carefully using the structured threat detection approach.
-
-## Analysis
-
-### Email Data Assessment
-- **Subject**: "Urgent: Your Account Has Been Locked!" uses urgency tactics common in phishing
-- **Sender**: Claims to be Chase Bank but uses a suspicious domain (chase-verification.com)
-- **Authentication**: All email authentication mechanisms failed (SPF, DKIM, DMARC)
-- **Content**: Brief message with urgent call to action and suspicious link
-- **URL**: Domain "chase-verification-login.com" is not an official Chase Bank domain
-
-### IOC Enrichment
-- **Domain analysis**: "chase-verification.com" 
-   - Not a legitimate Chase domain (legitimate would be chase.com)
-   - Uses hyphenated domain naming pattern common in phishing
-- **URL analysis**: "http://chase-verification-login.com"
-   - Uses HTTP instead of HTTPS (lacks encryption)
-   - Domain mimics Chase Bank but is not authentic
-   - Likely a credential harvesting page
-
-## Output
-
-- **Verdict**: Phishing
-- **Confidence**: 95%
-- **Reasoning**:
-   - Email fails all authentication checks (SPF, DKIM, DMARC)
-   - Sender domain "chase-verification.com" is not an official Chase domain
-   - Uses classic phishing tactics: urgency, fear, and impersonation of a financial institution
-   - Contains suspicious URL that mimics the bank's name but on an unofficial domain
-   - Lacks specific customer information that would be in legitimate communications
-
-- **IOC Enrichment**:
-   - chase-verification.com: Suspicious domain mimicking Chase Bank, not affiliated with legitimate financial institution
-   - chase-verification-login.com: Likely credential harvesting site, not an official Chase domain
-   - SPF/DKIM/DMARC failures: Indicates the email is not actually from the claimed sender
-
-This is a clear phishing attempt designed to trick users into believing their Chase account has security issues requiring immediate action, with the goal of stealing login credentials.
-"""
 
 # Extract information from the sample output
 verdict = "Phishing"

@@ -1,20 +1,15 @@
 import sys
 import os
-from dotenv import load_dotenv
-import anthropic 
+import re
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sample_data import sample_email_data
-from services import anthropic_client, enrichments
+from services import anthropic_client
 from utils import ioc_utils, parser
-import re
+
+print("Claude API Key:", anthropic_client.get_claude_api())
 
 
-load_dotenv()
-
-claude_api = os.getenv("ANTHROPIC_API_KEY")
-print(claude_api)
 # client = anthropic.Anthropic()
 
 # def extract_message_output(text):

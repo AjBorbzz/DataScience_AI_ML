@@ -1,11 +1,11 @@
 import os
 from dotenv import load_dotenv
 import anthropic 
-from sample_data import sample_email_data
+# from sample_data import sample_email_data
 import re
 import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 load_dotenv()
 

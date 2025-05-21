@@ -9,9 +9,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 load_dotenv()
 
-claude_api = os.getenv("ANTHROPIC_API_KEY")
 client = anthropic.Anthropic()
 
+def get_claude_api():
+    return os.getenv("ANTHROPIC_API_KEY")
 
 def process_phishing_detection(data):
     prompt_ = f"""

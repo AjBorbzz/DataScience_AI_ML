@@ -10,27 +10,27 @@ load_dotenv()
 claude_api = os.getenv("ANTHROPIC_API_KEY")
 client = anthropic.Anthropic()
 
-def extract_message_output(text):
-    verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
-    confidence = re.search(r"### Confidence:\s*(\d+)%", text).group(1)
-    reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))
+# def extract_message_output(text):
+#     verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
+#     confidence = re.search(r"### Confidence:\s*(\d+)%", text).group(1)
+#     reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))
 
-    domain = re.search(r"- Domain:\s*(.*?)\s*-", text).group(1).strip()
-    auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text).group(1).strip()
-    attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text).group(1).strip()
-    sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text).group(1).strip()
+#     domain = re.search(r"- Domain:\s*(.*?)\s*-", text).group(1).strip()
+#     auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text).group(1).strip()
+#     attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text).group(1).strip()
+#     sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text).group(1).strip()
 
-    return {
-        "Verdict": verdict,
-        "Confidence": int(confidence),
-        "Reasoning": reasoning,
-        "IOC Enrichment": {
-            "Domain": domain,
-            "Email Authentication": auth,
-            "Attachment": attachment,
-            "SHA256 Hash": sha256
-        }
-    }
+#     return {
+#         "Verdict": verdict,
+#         "Confidence": int(confidence),
+#         "Reasoning": reasoning,
+#         "IOC Enrichment": {
+#             "Domain": domain,
+#             "Email Authentication": auth,
+#             "Attachment": attachment,
+#             "SHA256 Hash": sha256
+#         }
+#     }
 
 
 sample_output_2 = """
@@ -60,59 +60,59 @@ This email contains multiple indicators of a phishing attempt impersonating PayP
 """
 
 
-def process_phishing_detection(data):
-    prompt_ = f"""
-    You are a cybersecurity threat detection assistant. Analyze the email data below and decide if it's phishing or benign.
+# def process_phishing_detection(data):
+#     prompt_ = f"""
+#     You are a cybersecurity threat detection assistant. Analyze the email data below and decide if it's phishing or benign.
 
-        Evaluate:
-        - Subject and body content
-        - Sender name and address
-        - URLs, domains, attachments, hashes
-        - QR codes or shortened links
-        - Language cues (urgency, impersonation, fear)
-        - Header anomalies (SPF, DKIM, DMARC issues)
-        - Threat indicators (IPs, file hashes, domains)
+#         Evaluate:
+#         - Subject and body content
+#         - Sender name and address
+#         - URLs, domains, attachments, hashes
+#         - QR codes or shortened links
+#         - Language cues (urgency, impersonation, fear)
+#         - Header anomalies (SPF, DKIM, DMARC issues)
+#         - Threat indicators (IPs, file hashes, domains)
 
-        Tasks:
-        1. Enrich indicators (URLs, hashes, QR codes, domains) with threat intelligence.
-        2. Judge whether the email is phishing, suspicious, or benign.
-        3. Justify the conclusion briefly based on the indicators.
+#         Tasks:
+#         1. Enrich indicators (URLs, hashes, QR codes, domains) with threat intelligence.
+#         2. Judge whether the email is phishing, suspicious, or benign.
+#         3. Justify the conclusion briefly based on the indicators.
 
-        ### Email Data
-        Subject: {data.get("email_subject")}  
-        From: {data["from_name"]} <{data["from_address"]}>  
-        To: {data["to_address"]}  
-        Headers: {data["headers"]}  
-        Body:  
-        {data["email_body"]}
+#         ### Email Data
+#         Subject: {data.get("email_subject")}  
+#         From: {data["from_name"]} <{data["from_address"]}>  
+#         To: {data["to_address"]}  
+#         Headers: {data["headers"]}  
+#         Body:  
+#         {data["email_body"]}
 
-        Attachments: {data["attachment_names_and_hashes"]}  
-        URLs: {data["list_of_urls"]}  
-        QR Codes (decoded): {data["qr_data"]}
+#         Attachments: {data["attachment_names_and_hashes"]}  
+#         URLs: {data["list_of_urls"]}  
+#         QR Codes (decoded): {data["qr_data"]}
 
-        ### Output
-        - Verdict: [Phishing | Suspicious | Benign]  
-        - Confidence (0–100%)  
-        - Reasoning:  
-        - (short_reason_1)  
-        - (short_reason_2)  
-        - IOC Enrichment:  
-        - (indicator): (Context)
+#         ### Output
+#         - Verdict: [Phishing | Suspicious | Benign]  
+#         - Confidence (0–100%)  
+#         - Reasoning:  
+#         - (short_reason_1)  
+#         - (short_reason_2)  
+#         - IOC Enrichment:  
+#         - (indicator): (Context)
 
-    """
+#     """
 
 
-    message = client.messages.create(model="claude-3-7-sonnet-20250219",
-                                    max_tokens=1000,
-                                    temperature=1,
-                                    system="You are a Security Automation Engineer who will integrate this LLM.",
-                                    messages=[{"role": "user","content": prompt_}],
-                                    stream=False,
-                                        )
+#     message = client.messages.create(model="claude-3-7-sonnet-20250219",
+#                                     max_tokens=1000,
+#                                     temperature=1,
+#                                     system="You are a Security Automation Engineer who will integrate this LLM.",
+#                                     messages=[{"role": "user","content": prompt_}],
+#                                     stream=False,
+#                                         )
     
-    print(type(message))
-    response = message.content[0].text
-    return response
+#     print(type(message))
+#     response = message.content[0].text
+#     return response
 
 # phishing_detection_message = process_phishing_detection(sample_email_data[1])
 # print(phishing_detection_message)

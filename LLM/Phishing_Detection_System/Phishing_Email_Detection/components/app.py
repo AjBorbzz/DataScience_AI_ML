@@ -1,15 +1,17 @@
 import sys
-import os
-import re
-from pathlib import Path
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import os
+from pathlib import Path
 from services.anthropic_client import process_phishing_detection
 from utils.parser import get_data_from_csv, extract_message_output
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 
 DATA_PATH = Path().resolve().parents[0] / "data"
-
 
 def main():
         # Get data from CSV

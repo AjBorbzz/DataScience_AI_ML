@@ -1,11 +1,14 @@
 import sys
+import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import os
 from pathlib import Path
+
 from utils import logging_config
+logging_config.setup_logging()
 import logging
 logger = logging.getLogger(__name__)
+
 from services.anthropic_client import process_phishing_detection
 from utils.parser import get_data_from_csv, extract_message_output
 from dotenv import load_dotenv
@@ -21,10 +24,10 @@ def main():
         #     print(data)
         #     data = parser.list_of_dicts_to_csv(data, "sample_data.csv")
 
-    logger.info("Starting the phishing detection process.")
+    logger.info("-- Starting the phishing detection process. --")
     try:
         csv_data = get_data_from_csv(DATA_PATH / SAMPLE_DATA_FILE)
-
+        print(csv_data)
         if not csv_data:
             logger.warning(f"No Data Found in {DATA_PATH / SAMPLE_DATA_FILE}. Exiting...")
             return

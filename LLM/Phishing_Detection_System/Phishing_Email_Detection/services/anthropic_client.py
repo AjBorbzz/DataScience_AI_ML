@@ -1,18 +1,18 @@
 import os
 from dotenv import load_dotenv
 import anthropic 
-# from sample_data import sample_email_data
-import re
 import sys
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 load_dotenv()
 
-client = anthropic.Anthropic()
+
 
 def get_claude_api():
     return os.getenv("ANTHROPIC_API_KEY")
+
+claude_api = get_claude_api()
+client = anthropic.Anthropic(api_key=claude_api)
 
 def process_phishing_detection(data):
     prompt_ = f"""
@@ -64,6 +64,6 @@ def process_phishing_detection(data):
                                     stream=False,
                                         )
     
-    print(type(message))
+    print("\nYour message is read!\n")
     response = message.content[0].text
     return response

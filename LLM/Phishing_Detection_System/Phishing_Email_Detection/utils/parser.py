@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 
 def extract_message_output(text):
     verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
@@ -21,3 +22,8 @@ def extract_message_output(text):
             "SHA256 Hash": sha256
         }
     }
+
+def get_data_from_csv(filepath):
+    df = pd.read_csv(filepath)
+    data = df.to_dict(orient='records', index=False)
+    return data

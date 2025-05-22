@@ -24,6 +24,30 @@ def extract_message_output(text):
     }
 
 def get_data_from_csv(filepath):
+    """
+    Reads data from a CSV file and returns it as a list of dictionaries.
+
+    Each dictionary in the list represents a row, with column headers as keys.
+
+    Args:
+        filepath (str): The path to the CSV file.
+
+    Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents a row of data.
+                    Returns an empty list if the CSV file is empty or not found.
+
+    """
     df = pd.read_csv(filepath)
-    data = df.to_dict(orient='records', index=False)
+    data = df.to_dict(orient='records')
     return data
+
+def list_of_dicts_to_csv(list_of_dicts, filename):
+    """
+    Converts a list of dictionaries to a CSV file.
+
+    Args:
+        list_of_dicts: A list of dictionaries.
+        filename: The name of the CSV file to create.
+    """
+    df = pd.DataFrame(list_of_dicts)
+    df.to_csv(filename, index=False)

@@ -207,51 +207,51 @@ def extract_message_output(text):
     return data
 
 # Alternative: Even more concise version using a single function
-def extract_message_output_compact(text):
-    """Compact version with inline pattern matching."""
-    logger.info(f"--== Running {extract_message_output_compact.__name__} from parser ==--")
+# def extract_message_output_compact(text):
+#     """Compact version with inline pattern matching."""
+#     logger.info(f"--== Running {extract_message_output_compact.__name__} from parser ==--")
     
-    # Helper function for multiple pattern attempts
-    def multi_extract(patterns, data_type=str, default=None):
-        for pattern in patterns:
-            result = smart_regex_extract(pattern, text, group=1, default=None, data_type=data_type)
-            if result is not None:
-                return result
-        return default
+#     # Helper function for multiple pattern attempts
+#     def multi_extract(patterns, data_type=str, default=None):
+#         for pattern in patterns:
+#             result = smart_regex_extract(pattern, text, group=1, default=None, data_type=data_type)
+#             if result is not None:
+#                 return result
+#         return default
     
-    data = {
-        "Verdict": multi_extract([
-            r"- \*\*Verdict\*\*:\s*(.+)",
-            r"\*\*Verdict\*\*:\s*(.+)",
-            r"Verdict:\s*(.+)"
-        ]),
-        "Confidence": multi_extract([
-            r"### Confidence:\s*(\d+)%",
-            r"\*\*Confidence\*\*:\s*(\d+)%",
-            r"Confidence:\s*(\d+)%"
-        ], data_type=int),
-        "Reasoning": extract_reasoning(text),
-        "IOC Enrichment": {
-            "Domain": multi_extract([
-                r"- Domain:\s*(.*?)\s*-",
-                r"Domain:\s*(.*?)(?:\n|$)"
-            ]),
-            "Email Authentication": multi_extract([
-                r"- Email authentication:\s*(.*?)\s*-",
-                r"Email authentication:\s*(.*?)(?:\n|$)"
-            ]),
-            "Attachment": multi_extract([
-                r"- Attachment:\s*(.*?)\s*-",
-                r"Attachment:\s*(.*?)(?:\n|$)"
-            ]),
-            "SHA256 Hash": multi_extract([
-                r"- SHA256 hash:\s*(.*?)\s*-",
-                r"SHA256 hash:\s*(.*?)(?:\n|$)"
-            ])
-        }
-    }
+#     data = {
+#         "Verdict": multi_extract([
+#             r"- \*\*Verdict\*\*:\s*(.+)",
+#             r"\*\*Verdict\*\*:\s*(.+)",
+#             r"Verdict:\s*(.+)"
+#         ]),
+#         "Confidence": multi_extract([
+#             r"### Confidence:\s*(\d+)%",
+#             r"\*\*Confidence\*\*:\s*(\d+)%",
+#             r"Confidence:\s*(\d+)%"
+#         ], data_type=int),
+#         "Reasoning": extract_reasoning(text),
+#         "IOC Enrichment": {
+#             "Domain": multi_extract([
+#                 r"- Domain:\s*(.*?)\s*-",
+#                 r"Domain:\s*(.*?)(?:\n|$)"
+#             ]),
+#             "Email Authentication": multi_extract([
+#                 r"- Email authentication:\s*(.*?)\s*-",
+#                 r"Email authentication:\s*(.*?)(?:\n|$)"
+#             ]),
+#             "Attachment": multi_extract([
+#                 r"- Attachment:\s*(.*?)\s*-",
+#                 r"Attachment:\s*(.*?)(?:\n|$)"
+#             ]),
+#             "SHA256 Hash": multi_extract([
+#                 r"- SHA256 hash:\s*(.*?)\s*-",
+#                 r"SHA256 hash:\s*(.*?)(?:\n|$)"
+#             ])
+#         }
+#     }
     
-    return data
+#     return data
 
 def get_data_from_csv(filepath):
     """

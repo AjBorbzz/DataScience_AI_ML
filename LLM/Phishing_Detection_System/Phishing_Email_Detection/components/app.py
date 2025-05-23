@@ -9,6 +9,7 @@ logging_config.setup_logging()
 import logging
 logger = logging.getLogger(__name__)
 
+print(f"logger: {logger}")
 from services.anthropic_client import process_phishing_detection
 from utils.parser import get_data_from_csv, extract_message_output, append_data_to_json
 from dotenv import load_dotenv

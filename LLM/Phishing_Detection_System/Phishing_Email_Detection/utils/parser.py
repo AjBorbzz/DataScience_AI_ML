@@ -13,28 +13,245 @@ DATA_DIR = PROJECT_ROOT / 'data'
 data_path = Path(DATA_DIR / 'data.json')
 
 
+text="""
+I'll analyze this email for potential phishing indicators:
+
+## Analysis
+
+First, let me evaluate the key components:
+
+1. **Email Headers**:
+   - SPF, DKIM, and DMARC all pass, which is a strong indicator of legitimacy
+   - Sender domain (github.com) matches the expected sender for GitHub notifications
+
+2. **Subject and Content**:
+   - Subject relates to account security (sign-in notification)
+   - Body is concise and typical of legitimate login notifications
+   - No urgency or fear tactics employed
+
+3. **URLs and Domains**:
+   - URL is to github.com's legitimate settings page
+   - No shortened links or redirects
+
+4. **Attachments/QR Codes**:
+   - None present
+
+5. **Language Analysis**:
+   - Professional, non-urgent tone
+   - No personal information requested
+   - Specifically notes "no action is needed" rather than prompting action
+
+6. **IOC Enrichment**:
+   - Domain: github.com is a legitimate software development platform
+   - URL: https://github.com/settings/sessions is the legitimate path for viewing session information
+
+## Evaluation
+
+### Output
+- **Verdict**: Benign
+- **Confidence**: 95%
+- **Reasoning**:
+  - Email passes all authentication checks (SPF, DKIM, DMARC)
+  - Sender domain matches expected source for GitHub notifications
+  - Content matches legitimate GitHub login notification patterns
+  - No suspicious URLs, attachments, or social engineering tactics
+- **IOC Enrichment**:
+  - github.com: Legitimate software development platform with proper security implementation
+  - https://github.com/settings/sessions: Valid GitHub URL for account session management
+"""
+
+
+def smart_regex_extract(pattern, text, group=1, default=None, data_type=str):
+    """
+    Smart regex extraction that handles groups safely and applies type conversion.
+    
+    Args:
+        pattern (str): Regex pattern to search for
+        text (str): Text to search in
+        group (int): Group number to extract (0 for full match, 1+ for capture groups)
+        default: Default value if no match is found
+        data_type: Type to convert the result to (str, int, float, etc.)
+    
+    Returns:
+        Extracted and converted value or default
+    """
+    match = re.search(pattern, text, re.DOTALL)
+    if match:
+        try:
+            value = match.group(group).strip()
+            return data_type(value) if value else default
+        except (IndexError, ValueError, AttributeError):
+            return default
+    return default
+
+# def extract_message_output():
+#     logger.info(f"--== Running {extract_message_output.__name__} from parser ==--")
+    
+#     search_verdict = re.search(r"- \*\*Verdict\*\*:\s*(.+)", text)
+#     verdict = regex_parse(search_verdict)
+
+#     search_confidence = re.search(r"### Confidence:\s*(\d+)%", text)
+#     confidence = regex_parse(search_confidence)
+#     # reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))
+#     reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL))
+#     domain = re.search(r"- Domain:\s*(.*?)\s*-", text)
+#     auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text)
+#     attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text)
+#     sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text)
+#     # domain = re.search(r"- Domain:\s*(.*?)\s*-", text).group(1).strip()
+#     # auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text).group(1).strip()
+#     # attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text).group(1).strip()
+#     # sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text).group(1).strip()
+
+#     data = {
+#         "Verdict": verdict,
+#         "Confidence": int(confidence),
+#         "Reasoning": reasoning,
+#         "IOC Enrichment": {
+#             "Domain": domain,
+#             "Email Authentication": auth,
+#             "Attachment": attachment,
+#             "SHA256 Hash": sha256
+#         }
+#     }
+
+#     print(data)
+
+def extract_reasoning(text):
+    """Extract reasoning list from text."""
+    reasoning_match = re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL)
+    if reasoning_match:
+        reasoning_text = reasoning_match.group(1)
+        return [item.strip() for item in re.findall(r"- (.*?)(?=\n|$)", reasoning_text) if item.strip()]
+    return []
+
 def extract_message_output(text):
+    """Extract structured data from message output text."""
     logger.info(f"--== Running {extract_message_output.__name__} from parser ==--")
-    verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
-    confidence = re.search(r"### Confidence:\s*(\d+)%", text).group(1)
-    reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))
-
-    domain = re.search(r"- Domain:\s*(.*?)\s*-", text).group(1).strip()
-    auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text).group(1).strip()
-    attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text).group(1).strip()
-    sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text).group(1).strip()
-
-    return {
-        "Verdict": verdict,
-        "Confidence": int(confidence),
-        "Reasoning": reasoning,
-        "IOC Enrichment": {
-            "Domain": domain,
-            "Email Authentication": auth,
-            "Attachment": attachment,
-            "SHA256 Hash": sha256
+    
+    # Define extraction patterns with their configurations
+    extractions = {
+        "verdict": {
+            "patterns": [
+                r"- \*\*Verdict\*\*:\s*(.+)",
+                r"\*\*Verdict\*\*:\s*(.+)",
+                r"Verdict:\s*(.+)"
+            ]
+        },
+        "confidence": {
+            "patterns": [
+                r"### Confidence:\s*(\d+)%",
+                r"\*\*Confidence\*\*:\s*(\d+)%",
+                r"Confidence:\s*(\d+)%"
+            ],
+            "data_type": int
+        },
+        "domain": {
+            "patterns": [
+                r"- Domain:\s*(.*?)\s*-",
+                r"Domain:\s*(.*?)(?:\n|$)"
+            ]
+        },
+        "auth": {
+            "patterns": [
+                r"- Email authentication:\s*(.*?)\s*-",
+                r"Email authentication:\s*(.*?)(?:\n|$)"
+            ]
+        },
+        "attachment": {
+            "patterns": [
+                r"- Attachment:\s*(.*?)\s*-",
+                r"Attachment:\s*(.*?)(?:\n|$)"
+            ]
+        },
+        "sha256": {
+            "patterns": [
+                r"- SHA256 hash:\s*(.*?)\s*-",
+                r"SHA256 hash:\s*(.*?)(?:\n|$)"
+            ]
         }
     }
+    
+    # Extract values using multiple pattern attempts
+    results = {}
+    for key, config in extractions.items():
+        patterns = config["patterns"]
+        data_type = config.get("data_type", str)
+        default = config.get("default", None)
+        
+        value = None
+        for pattern in patterns:
+            value = smart_regex_extract(pattern, text, group=1, default=None, data_type=data_type)
+            if value is not None:
+                break
+        
+        results[key] = value if value is not None else default
+    
+    # Extract reasoning separately due to its complex structure
+    reasoning = extract_reasoning(text)
+    
+    # Build final data structure
+    data = {
+        "Verdict": results["verdict"],
+        "Confidence": results["confidence"],
+        "Reasoning": reasoning,
+        "IOC Enrichment": {
+            "Domain": results["domain"],
+            "Email Authentication": results["auth"],
+            "Attachment": results["attachment"],
+            "SHA256 Hash": results["sha256"]
+        }
+    }
+    
+    logger.info("Successfully extracted message output data")
+    return data
+
+# Alternative: Even more concise version using a single function
+def extract_message_output_compact(text):
+    """Compact version with inline pattern matching."""
+    logger.info(f"--== Running {extract_message_output_compact.__name__} from parser ==--")
+    
+    # Helper function for multiple pattern attempts
+    def multi_extract(patterns, data_type=str, default=None):
+        for pattern in patterns:
+            result = smart_regex_extract(pattern, text, group=1, default=None, data_type=data_type)
+            if result is not None:
+                return result
+        return default
+    
+    data = {
+        "Verdict": multi_extract([
+            r"- \*\*Verdict\*\*:\s*(.+)",
+            r"\*\*Verdict\*\*:\s*(.+)",
+            r"Verdict:\s*(.+)"
+        ]),
+        "Confidence": multi_extract([
+            r"### Confidence:\s*(\d+)%",
+            r"\*\*Confidence\*\*:\s*(\d+)%",
+            r"Confidence:\s*(\d+)%"
+        ], data_type=int),
+        "Reasoning": extract_reasoning(text),
+        "IOC Enrichment": {
+            "Domain": multi_extract([
+                r"- Domain:\s*(.*?)\s*-",
+                r"Domain:\s*(.*?)(?:\n|$)"
+            ]),
+            "Email Authentication": multi_extract([
+                r"- Email authentication:\s*(.*?)\s*-",
+                r"Email authentication:\s*(.*?)(?:\n|$)"
+            ]),
+            "Attachment": multi_extract([
+                r"- Attachment:\s*(.*?)\s*-",
+                r"Attachment:\s*(.*?)(?:\n|$)"
+            ]),
+            "SHA256 Hash": multi_extract([
+                r"- SHA256 hash:\s*(.*?)\s*-",
+                r"SHA256 hash:\s*(.*?)(?:\n|$)"
+            ])
+        }
+    }
+    
+    return data
 
 def get_data_from_csv(filepath):
     """

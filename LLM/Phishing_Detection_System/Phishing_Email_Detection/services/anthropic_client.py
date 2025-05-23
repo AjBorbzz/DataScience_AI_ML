@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import anthropic 
 import sys
-
+from utils.logging_config import log_duration
 
 load_dotenv()
 
@@ -14,6 +14,7 @@ def get_claude_api():
 claude_api = get_claude_api()
 client = anthropic.Anthropic(api_key=claude_api)
 
+@log_duration
 def process_phishing_detection(data):
     prompt_ = f"""
     You are a cybersecurity threat detection assistant. Analyze the email data below and decide if it's phishing or benign.
@@ -44,15 +45,31 @@ def process_phishing_detection(data):
         URLs: {data["list_of_urls"]}  
         QR Codes (decoded): {data["qr_data"]}
 
-        ### Output
-        - Verdict: [Phishing | Suspicious | Benign]  
-        - Confidence (0–100%)  
-        - Reasoning:  
-        - (short_reason_1)  
-        - (short_reason_2)  
-        - IOC Enrichment:  
-        - (indicator): (Context)
+        sample output (text): 
+        ```
+        I'll analyze this email for threat indicators as requested.
 
+        ## Analysis of Email Data
+
+        After reviewing the provided email data, I can provide the following threat assessment:
+
+        ### Verdict: Phishing
+        ### Confidence: 90%
+
+        ### Reasoning:
+        - The sender domain "paypal-secure.com" is suspicious - legitimate PayPal emails come from paypal.com, not variants with hyphens or additional words
+        - Complete authentication failure (SPF softfail, DKIM fail, DMARC fail) indicates the sender is not authorized
+        - Urgent language about penalties within 24 hours is a classic pressure tactic used in phishing
+        - Generic greeting and vague content about an invoice without specific details is typical of phishing attempts
+
+        ### IOC Enrichment:
+        - Domain: paypal-secure.com - This appears to be a typosquat domain designed to impersonate PayPal
+        - Email authentication: All three email authentication mechanisms (SPF, DKIM, DMARC) failed, strongly suggesting the email is not from a legitimate sender
+        - Attachment: invoice_1245.pdf - The provided hash appears to be incomplete, but PDF attachments are common vectors for malware delivery
+        - SHA256 hash: e3b0c44298fc1c14...ffb6c1 (truncated) - Without the complete hash, proper enrichment is limited, but this should be scanned in a sandbox environment
+
+        This email contains multiple indicators of a phishing attempt impersonating PayPal with the goal of delivering potentially malicious content via the PDF attachment.
+        ```
     """
 
 

@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from services.anthropic_client import process_phishing_detection
-from utils.parser import get_data_from_csv, extract_message_output
+from utils.parser import get_data_from_csv, extract_message_output, append_data_to_json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,13 +27,15 @@ def main():
     logger.info("-- Starting the phishing detection process. --")
     try:
         csv_data = get_data_from_csv(DATA_PATH / SAMPLE_DATA_FILE)
-        print(csv_data)
+        # print(csv_data)
         if not csv_data:
             logger.warning(f"No Data Found in {DATA_PATH / SAMPLE_DATA_FILE}. Exiting...")
             return
         
         # response = process_phishing_detection(csv_data[3])
         # extracted_data = extract_message_output(response)
+        sample_data = {'name': 'Jane Doe', 'age': 30}
+        append_data_to_json(sample_data)
     except FileNotFoundError:
         logger.error(f"Error: CSV file not found at {DATA_PATH / SAMPLE_DATA_FILE}")
 

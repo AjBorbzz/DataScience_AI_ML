@@ -1,5 +1,17 @@
 import re
 import pandas as pd
+import json
+from pathlib import Path
+import os
+from utils import logging_config
+logging_config.setup_logging()
+import logging
+logger = logging.getLogger(__name__)
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = PROJECT_ROOT / 'data'
+data_path = Path(DATA_DIR / 'data.json')
 
 def extract_message_output(text):
     verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
@@ -51,3 +63,35 @@ def list_of_dicts_to_csv(list_of_dicts, filename):
     """
     df = pd.DataFrame(list_of_dicts)
     df.to_csv(filename, index=False)
+
+
+def append_data_to_json(data_object):
+    # get file path
+    # check if file exists if not create one, if it exists append the data 
+    """
+    Checks if a JSON file exists and contains data. If it exists and
+    contains an array, the function appends the provided data object to the array.
+
+    Args:
+        data_object (dict): The data object to append.
+    """
+    if data_path.exists():
+        try:
+            with open(data_path, 'r+') as f:
+                f_content = f.read()
+                if f_content:
+                    data = json.loads(f_content)
+                    if isinstance(data, list):
+                        data.append(data_object)
+                        f.seek(0)
+                        json.dump(data, f, indent=4)
+                        f.truncate()
+                    else:
+                        logger.info("---Data added to json---")
+                else:
+                    json.dump([data_object], open(data_path, 'w'), indent=4)
+        except json.JSONDecodeError:
+            logger.error("The JSON file is corrupted or does not contain valid JSON.")
+
+    else:
+        json.dump([data_object], open(data_path, 'w'), indent=4)

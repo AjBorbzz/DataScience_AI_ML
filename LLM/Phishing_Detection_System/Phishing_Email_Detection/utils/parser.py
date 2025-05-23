@@ -3,8 +3,7 @@ import pandas as pd
 import json
 from pathlib import Path
 import os
-from utils import logging_config
-logging_config.setup_logging()
+import inspect
 import logging
 logger = logging.getLogger(__name__)
 
@@ -12,6 +11,7 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / 'data'
 data_path = Path(DATA_DIR / 'data.json')
+
 
 def extract_message_output(text):
     verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
@@ -75,6 +75,7 @@ def append_data_to_json(data_object):
     Args:
         data_object (dict): The data object to append.
     """
+    logger.info(f"--== Running {append_data_to_json.__name__} from parser ==--")
     if data_path.exists():
         try:
             with open(data_path, 'r+') as f:
@@ -95,3 +96,4 @@ def append_data_to_json(data_object):
 
     else:
         json.dump([data_object], open(data_path, 'w'), indent=4)
+    logger.info(f"--== {append_data_to_json.__name__}: Successfully added data ==--")

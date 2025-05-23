@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from pathlib import Path
 
@@ -9,14 +9,13 @@ logging_config.setup_logging()
 import logging
 logger = logging.getLogger(__name__)
 
-print(f"logger: {logger}")
 from services.anthropic_client import process_phishing_detection
 from utils.parser import get_data_from_csv, extract_message_output, append_data_to_json
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DATA_PATH = Path().resolve().parents[0] / "data"
+DATA_PATH = Path().resolve() / "data"
 SAMPLE_DATA_FILE = "sample_data.csv"
 
 def main():
@@ -43,7 +42,7 @@ def main():
     except Exception as e:
         logger.error(f"An unexpected error has occured : {e}", exc_info=True)
 
-    logger.info("Phishing Detection Process Completed.")
+    logger.info("---===*** Phishing Detection Process Completed. ***===---")
 
 
 if __name__ == '__main__':

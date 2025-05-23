@@ -7,59 +7,9 @@ import inspect
 import logging
 logger = logging.getLogger(__name__)
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / 'data'
 data_path = Path(DATA_DIR / 'data.json')
-
-
-text="""
-I'll analyze this email for potential phishing indicators:
-
-## Analysis
-
-First, let me evaluate the key components:
-
-1. **Email Headers**:
-   - SPF, DKIM, and DMARC all pass, which is a strong indicator of legitimacy
-   - Sender domain (github.com) matches the expected sender for GitHub notifications
-
-2. **Subject and Content**:
-   - Subject relates to account security (sign-in notification)
-   - Body is concise and typical of legitimate login notifications
-   - No urgency or fear tactics employed
-
-3. **URLs and Domains**:
-   - URL is to github.com's legitimate settings page
-   - No shortened links or redirects
-
-4. **Attachments/QR Codes**:
-   - None present
-
-5. **Language Analysis**:
-   - Professional, non-urgent tone
-   - No personal information requested
-   - Specifically notes "no action is needed" rather than prompting action
-
-6. **IOC Enrichment**:
-   - Domain: github.com is a legitimate software development platform
-   - URL: https://github.com/settings/sessions is the legitimate path for viewing session information
-
-## Evaluation
-
-### Output
-- **Verdict**: Benign
-- **Confidence**: 95%
-- **Reasoning**:
-  - Email passes all authentication checks (SPF, DKIM, DMARC)
-  - Sender domain matches expected source for GitHub notifications
-  - Content matches legitimate GitHub login notification patterns
-  - No suspicious URLs, attachments, or social engineering tactics
-- **IOC Enrichment**:
-  - github.com: Legitimate software development platform with proper security implementation
-  - https://github.com/settings/sessions: Valid GitHub URL for account session management
-"""
-
 
 def smart_regex_extract(pattern, text, group=1, default=None, data_type=str):
     """
@@ -84,39 +34,6 @@ def smart_regex_extract(pattern, text, group=1, default=None, data_type=str):
             return default
     return default
 
-# def extract_message_output():
-#     logger.info(f"--== Running {extract_message_output.__name__} from parser ==--")
-    
-#     search_verdict = re.search(r"- \*\*Verdict\*\*:\s*(.+)", text)
-#     verdict = regex_parse(search_verdict)
-
-#     search_confidence = re.search(r"### Confidence:\s*(\d+)%", text)
-#     confidence = regex_parse(search_confidence)
-#     # reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))
-#     reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL))
-#     domain = re.search(r"- Domain:\s*(.*?)\s*-", text)
-#     auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text)
-#     attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text)
-#     sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text)
-#     # domain = re.search(r"- Domain:\s*(.*?)\s*-", text).group(1).strip()
-#     # auth = re.search(r"- Email authentication:\s*(.*?)\s*-", text).group(1).strip()
-#     # attachment = re.search(r"- Attachment:\s*(.*?)\s*-", text).group(1).strip()
-#     # sha256 = re.search(r"- SHA256 hash:\s*(.*?)\s*-", text).group(1).strip()
-
-#     data = {
-#         "Verdict": verdict,
-#         "Confidence": int(confidence),
-#         "Reasoning": reasoning,
-#         "IOC Enrichment": {
-#             "Domain": domain,
-#             "Email Authentication": auth,
-#             "Attachment": attachment,
-#             "SHA256 Hash": sha256
-#         }
-#     }
-
-#     print(data)
-
 def extract_reasoning(text):
     """Extract reasoning list from text."""
     reasoning_match = re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL)
@@ -133,9 +50,9 @@ def extract_message_output(text):
     extractions = {
         "verdict": {
             "patterns": [
-                r"- \*\*Verdict\*\*:\s*(.+)",
-                r"\*\*Verdict\*\*:\s*(.+)",
-                r"Verdict:\s*(.+)"
+                r"- \*\*Verdict\*\*:\s*([^\n]+)",
+                r"\*\*Verdict\*\*:\s*([^\n]+)",
+                r"Verdict:\s*([^\n]+)"
             ]
         },
         "confidence": {
@@ -202,56 +119,14 @@ def extract_message_output(text):
             "SHA256 Hash": results["sha256"]
         }
     }
-    
+    try:
+        formatted_data = json.dumps(data, indent=4, ensure_ascii=False)
+        logger.info(f"== DATA == \n{formatted_data}\n")
+    except (TypeError, ValueError) as e:
+        logger.warning(f"Could not serialize data to JSON: {e}")
+        logger.info(f"== DATA == \n{data}\n")
     logger.info("Successfully extracted message output data")
     return data
-
-# Alternative: Even more concise version using a single function
-# def extract_message_output_compact(text):
-#     """Compact version with inline pattern matching."""
-#     logger.info(f"--== Running {extract_message_output_compact.__name__} from parser ==--")
-    
-#     # Helper function for multiple pattern attempts
-#     def multi_extract(patterns, data_type=str, default=None):
-#         for pattern in patterns:
-#             result = smart_regex_extract(pattern, text, group=1, default=None, data_type=data_type)
-#             if result is not None:
-#                 return result
-#         return default
-    
-#     data = {
-#         "Verdict": multi_extract([
-#             r"- \*\*Verdict\*\*:\s*(.+)",
-#             r"\*\*Verdict\*\*:\s*(.+)",
-#             r"Verdict:\s*(.+)"
-#         ]),
-#         "Confidence": multi_extract([
-#             r"### Confidence:\s*(\d+)%",
-#             r"\*\*Confidence\*\*:\s*(\d+)%",
-#             r"Confidence:\s*(\d+)%"
-#         ], data_type=int),
-#         "Reasoning": extract_reasoning(text),
-#         "IOC Enrichment": {
-#             "Domain": multi_extract([
-#                 r"- Domain:\s*(.*?)\s*-",
-#                 r"Domain:\s*(.*?)(?:\n|$)"
-#             ]),
-#             "Email Authentication": multi_extract([
-#                 r"- Email authentication:\s*(.*?)\s*-",
-#                 r"Email authentication:\s*(.*?)(?:\n|$)"
-#             ]),
-#             "Attachment": multi_extract([
-#                 r"- Attachment:\s*(.*?)\s*-",
-#                 r"Attachment:\s*(.*?)(?:\n|$)"
-#             ]),
-#             "SHA256 Hash": multi_extract([
-#                 r"- SHA256 hash:\s*(.*?)\s*-",
-#                 r"SHA256 hash:\s*(.*?)(?:\n|$)"
-#             ])
-#         }
-#     }
-    
-#     return data
 
 def get_data_from_csv(filepath):
     """

@@ -32,10 +32,9 @@ def main():
             logger.warning(f"No Data Found in {DATA_PATH / SAMPLE_DATA_FILE}. Exiting...")
             return
         
-        # response = process_phishing_detection(csv_data[3])
-        # extracted_data = extract_message_output(response)
-        sample_data = {'name': 'Jane Doe', 'age': 30}
-        append_data_to_json(sample_data)
+        response = process_phishing_detection(csv_data[3])
+        extracted_data = extract_message_output(response)
+        append_data_to_json(extracted_data)
     except FileNotFoundError:
         logger.error(f"Error: CSV file not found at {DATA_PATH / SAMPLE_DATA_FILE}")
 

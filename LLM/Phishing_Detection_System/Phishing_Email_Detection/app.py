@@ -27,12 +27,13 @@ def main():
     logger.info("-- Starting the phishing detection process. --")
     try:
         csv_data = get_data_from_csv(DATA_PATH / SAMPLE_DATA_FILE)
-        # print(csv_data)
+        print(csv_data)
         if not csv_data:
             logger.warning(f"No Data Found in {DATA_PATH / SAMPLE_DATA_FILE}. Exiting...")
             return
         
         response = process_phishing_detection(csv_data[3])
+        print(response)
         extracted_data = extract_message_output(response)
         append_data_to_json(extracted_data)
     except FileNotFoundError:

@@ -14,6 +14,7 @@ data_path = Path(DATA_DIR / 'data.json')
 
 
 def extract_message_output(text):
+    logger.info(f"--== Running {extract_message_output.__name__} from parser ==--")
     verdict = re.search(r"### Verdict:\s*(.+)", text).group(1)
     confidence = re.search(r"### Confidence:\s*(\d+)%", text).group(1)
     reasoning = re.findall(r"- (.*?)\n", re.search(r"### Reasoning:(.*?)(###|$)", text, re.DOTALL).group(1))

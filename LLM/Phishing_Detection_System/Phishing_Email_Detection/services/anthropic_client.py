@@ -84,4 +84,4 @@ def process_phishing_detection(data):
     print("\nYour message is read!\n")
     response = message.content[0].text
 
-    return response
+    return response, data

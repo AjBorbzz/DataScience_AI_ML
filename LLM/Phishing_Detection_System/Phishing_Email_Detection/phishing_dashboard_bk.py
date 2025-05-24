@@ -22,8 +22,8 @@ data = load_data()
 sample_data = data[1] # print just one data
 
 # Extract information from the sample output
-verdict = sample_data.get("Verdict")
-confidence = f"{sample_data.get('Confidence')}%"
+verdict = "Phishing"
+confidence = "95%"
 
 # Parse data for visualization
 email_data = {

@@ -42,7 +42,7 @@ def extract_reasoning(text):
         return [item.strip() for item in re.findall(r"- (.*?)(?=\n|$)", reasoning_text) if item.strip()]
     return []
 
-def extract_message_output(text):
+def extract_message_output(text, data):
     """Extract structured data from message output text."""
     logger.info(f"--== Running {extract_message_output.__name__} from parser ==--")
     
@@ -108,7 +108,7 @@ def extract_message_output(text):
     reasoning = extract_reasoning(text)
     
     # Build final data structure
-    data = {
+    data.update({
         "Verdict": results["verdict"],
         "Confidence": results["confidence"],
         "Reasoning": reasoning,
@@ -118,7 +118,7 @@ def extract_message_output(text):
             "Attachment": results["attachment"],
             "SHA256 Hash": results["sha256"]
         }
-    }
+    })
     try:
         formatted_data = json.dumps(data, indent=4, ensure_ascii=False)
         logger.info(f"== DATA == \n{formatted_data}\n")

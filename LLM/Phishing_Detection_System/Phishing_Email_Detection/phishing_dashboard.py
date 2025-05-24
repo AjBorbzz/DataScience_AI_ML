@@ -19,12 +19,12 @@ def load_css(file_path):
 load_css("styles/custom.css")
 
 data = load_data()
-sample_data = data[1] # print just one data
+sample_data = data[0] # print just one data
 
 # Extract information from the sample output
 verdict = sample_data.get("Verdict")
 confidence = f"{sample_data.get('Confidence')}%"
-reasoning = sample_data.get("reasoning")
+reasoning = sample_data.get("Reasoning")
 
 # Parse data for visualization
 email_data = {
@@ -104,7 +104,7 @@ with col1:
         if key == "Authentication" and value.startswith("Failed"):
             st.markdown(f"**{key}:** <span class='security-failed'>{value}</span>", unsafe_allow_html=True)
         elif key == "URL" and "Not an official" in value:
-            st.markdown(f"**{key}:** <span class='security-failed'>{value}</span>", unsafe_allow_html=True)
+            st.markdown(f"**{key}:** <span class='security-failed'>{value}</span>", unsafe_allow_html=False)
         elif key == "Subject" and "Urgent" in value:
             st.markdown(f"**{key}:** <span class='highlight'>{value}</span>", unsafe_allow_html=True)
         else:

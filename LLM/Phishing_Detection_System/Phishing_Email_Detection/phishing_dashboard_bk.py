@@ -18,8 +18,6 @@ def load_css(file_path):
 
 load_css("styles/custom.css")
 
-data = load_data()
-sample_data = data[1] # print just one data
 
 # Extract information from the sample output
 verdict = "Phishing"

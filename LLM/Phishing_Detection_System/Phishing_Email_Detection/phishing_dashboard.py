@@ -35,8 +35,6 @@ email_data = {
     "URL": "http://chase-verification-login.com (Not an official Chase Bank domain)"
 }
 
-
-
 auth_results = {
     "SPF": "Failed",
     "DKIM": "Failed", 
@@ -58,13 +56,13 @@ iocs = [
     {"IOC": "SPF/DKIM/DMARC failures", "Type": "Email Authentication", "Description": "Indicates the email is not from the claimed sender"}
 ]
 
-reasoning = [
-    "Email fails all authentication checks (SPF, DKIM, DMARC)",
-    "Sender domain 'chase-verification.com' is not an official Chase domain",
-    "Uses classic phishing tactics: urgency, fear, and impersonation of a financial institution",
-    "Contains suspicious URL that mimics the bank's name but on an unofficial domain",
-    "Lacks specific customer information that would be in legitimate communications"
-]
+# reasoning = [
+#     "Email fails all authentication checks (SPF, DKIM, DMARC)",
+#     "Sender domain 'chase-verification.com' is not an official Chase domain",
+#     "Uses classic phishing tactics: urgency, fear, and impersonation of a financial institution",
+#     "Contains suspicious URL that mimics the bank's name but on an unofficial domain",
+#     "Lacks specific customer information that would be in legitimate communications"
+# ]
 
 # Display header section
 st.markdown("""

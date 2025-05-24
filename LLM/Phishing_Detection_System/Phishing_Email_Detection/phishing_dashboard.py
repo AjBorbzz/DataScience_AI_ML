@@ -24,6 +24,7 @@ sample_data = data[1] # print just one data
 # Extract information from the sample output
 verdict = sample_data.get("Verdict")
 confidence = f"{sample_data.get('Confidence')}%"
+reasoning = sample_data.get("reasoning")
 
 # Parse data for visualization
 email_data = {
@@ -33,6 +34,8 @@ email_data = {
     "Content": "Brief message with urgent call to action and suspicious link",
     "URL": "http://chase-verification-login.com (Not an official Chase Bank domain)"
 }
+
+
 
 auth_results = {
     "SPF": "Failed",

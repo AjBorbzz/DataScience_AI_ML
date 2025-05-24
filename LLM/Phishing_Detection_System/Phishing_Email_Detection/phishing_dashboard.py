@@ -99,7 +99,7 @@ with col1:
     
     # Email data table
     st.markdown("<div class='info-box'>", unsafe_allow_html=True)
-    for key, value in email_data.items():
+    for key, value in sample_data.items():
         if key == "Authentication" and value.startswith("Failed"):
             st.markdown(f"**{key}:** <span class='security-failed'>{value}</span>", unsafe_allow_html=True)
         elif key == "URL" and "Not an official" in value:

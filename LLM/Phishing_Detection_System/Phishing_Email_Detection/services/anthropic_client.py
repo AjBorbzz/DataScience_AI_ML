@@ -64,7 +64,11 @@ def process_phishing_detection(data):
 
         ### IOC Enrichment:
         - Domain: paypal-secure.com - This appears to be a typosquat domain designed to impersonate PayPal
-        - Email authentication: All three email authentication mechanisms (SPF, DKIM, DMARC) failed, strongly suggesting the email is not from a legitimate sender
+        - Email authentication: 
+          - SPF: "Failed"
+          - DKIM: "Passed"
+          - DMARC: "Failed"
+          - Conclusion: All three email authentication mechanisms (SPF, DKIM, DMARC) failed, strongly suggesting the email is not from a legitimate sender
         - Attachment: invoice_1245.pdf - The provided hash appears to be incomplete, but PDF attachments are common vectors for malware delivery
         - SHA256 hash: e3b0c44298fc1c14...ffb6c1 (truncated) - Without the complete hash, proper enrichment is limited, but this should be scanned in a sandbox environment
 

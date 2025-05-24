@@ -1,5 +1,6 @@
 import re
 import pandas as pd
+import numpy as np
 import json
 from pathlib import Path
 import os
@@ -143,6 +144,7 @@ def get_data_from_csv(filepath):
 
     """
     df = pd.read_csv(filepath)
+    df = df.replace(np.nan, None)
     data = df.to_dict(orient='records')
     return data
 

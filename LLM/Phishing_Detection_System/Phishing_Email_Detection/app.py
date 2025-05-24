@@ -19,11 +19,6 @@ DATA_PATH = Path().resolve() / "data"
 SAMPLE_DATA_FILE = "sample_data.csv"
 
 def main():
-        # Get data from CSV
-        #     data = parser.get_data_from_csv(DATA_PATH / "test.csv")
-        #     print(data)
-        #     data = parser.list_of_dicts_to_csv(data, "sample_data.csv")
-
     logger.info("-- Starting the phishing detection process. --")
     try:
         csv_data: list = get_data_from_csv(DATA_PATH / SAMPLE_DATA_FILE)
@@ -31,8 +26,8 @@ def main():
             logger.warning(f"No Data Found in {DATA_PATH / SAMPLE_DATA_FILE}. Exiting...")
             return
         
-        response: str = process_phishing_detection(csv_data[1])
-
+        response: str = process_phishing_detection(csv_data[4])
+        print(response)
         extracted_data: dict = extract_message_output(response)
         append_data_to_json(extracted_data)
     except FileNotFoundError:

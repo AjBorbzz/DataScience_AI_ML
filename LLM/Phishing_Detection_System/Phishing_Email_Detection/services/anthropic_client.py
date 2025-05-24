@@ -45,7 +45,7 @@ def process_phishing_detection(data):
         URLs: {data["list_of_urls"]}  
         QR Codes (decoded): {data["qr_data"]}
 
-        sample output (text): 
+        Here is a sample output (text): 
         ```
         I'll analyze this email for threat indicators as requested.
 
@@ -83,4 +83,5 @@ def process_phishing_detection(data):
     
     print("\nYour message is read!\n")
     response = message.content[0].text
+
     return response

@@ -157,7 +157,6 @@ def list_of_dicts_to_csv(list_of_dicts, filename):
     df = pd.DataFrame(list_of_dicts)
     df.to_csv(filename, index=False)
 
-
 def append_data_to_json(data_object):
     # get file path
     # check if file exists if not create one, if it exists append the data 
@@ -190,3 +189,9 @@ def append_data_to_json(data_object):
     else:
         json.dump([data_object], open(data_path, 'w'), indent=4)
     logger.info(f"--== {append_data_to_json.__name__}: Successfully added data ==--")
+
+def load_data():
+    logger.info(f"--== Running {load_data.__name__} from parser ==--")
+    with open(data_path, 'r') as f:
+        data = json.load(f)
+    return data

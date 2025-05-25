@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import anthropic 
 import sys
 from utils.logging_config import log_duration
-
+from utils.parser import save_data_to_json
 load_dotenv()
 
 
@@ -14,7 +14,7 @@ def get_claude_api():
 claude_api = get_claude_api()
 client = anthropic.Anthropic(api_key=claude_api)
 
-
+@log_duration
 def process_message_with_cache():
     response = client.messages.create(
             model="claude-3-7-sonnet-20250219",
@@ -33,7 +33,9 @@ def process_message_with_cache():
             messages=[{"role": "user", "content": "Analyze the major themes in 'Pride and Prejudice'."}],
         )
     print(f"response: {response}")
-    
+    save_data_to_json(response)
     return response.usage.model_dump_json()
     
-print(response.usage.model_dump_json())
+
+def create_message_cache():
+    pass

@@ -197,3 +197,9 @@ def load_data():
     with open(data_path, 'r') as f:
         data = json.load(f)
     return data
+
+def save_data_to_json(data, file_name="data.json"):
+    logger.info(f"--== Running {save_data_to_json.__name__} from parser ==--")
+    with open(DATA_DIR / file_name , 'w+') as f:
+        json.dump(data, f, indent=4)
+    logger.info(f"--== {save_data_to_json.__name__} : saved {file_name}")

@@ -22,7 +22,7 @@ def vt_scan_url(url):
 
 def vt_get_url_report(analysis_id):
     # Extract the actual ID from full `id` if needed
-    analysis_id = analysis_id.split("-")[-1]
+    analysis_id = analysis_id.split("-")[1]
     url = f"{VT_URL}/{analysis_id}"
     while True:
         response = requests.get(url, headers=HEADERS)

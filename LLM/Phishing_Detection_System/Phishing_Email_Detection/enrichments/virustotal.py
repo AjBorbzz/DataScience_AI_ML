@@ -53,13 +53,13 @@ def vt_get_url_report(analysis_id):
         response = requests.get(url, headers=HEADERS)
         response.raise_for_status()
         json_data = response.json()
-        print(f"json_data: {json_data}")
-        status = json_data.get("data", {}).get("attributes", {}).get("status", "")
-        print(f"Scan status: {status}")
+        attributes = json_data.get('data').get('attributes')
+        if attributes:
+            verdict = attributes.get('total_votes')
+            return verdict
+        else:
+            time.sleep(20)
         
-        if status == "completed":
-            return json_data
-        time.sleep(20)  # Wait before retrying
 
 def main():
     try:

@@ -107,5 +107,3 @@ If your notes are large, consider:
 ✅ Using **LangChain** with Ollama for better document retrieval  
 ✅ Splitting documents into chunks  
 ✅ Using **vector embeddings** for more relevant search  
-
-# Adjusted

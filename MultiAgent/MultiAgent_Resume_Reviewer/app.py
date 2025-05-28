@@ -241,3 +241,5 @@ job_application_inputs = {
     'github_url': 'https://github.com/AjBorbzz', # Replace with your GitHub URL
     'linkedin_profile': 'https://www.linkedin.com/in/albert-borbe-489337140/' # Replace with your personal website URL
 }
+
+result = job_application_crew.kickoff(inputs=job_application_inputs)

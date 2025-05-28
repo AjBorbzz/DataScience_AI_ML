@@ -212,3 +212,32 @@ interview_preparation_task = Task(
     context=[research_task, profile_task, resume_strategy_task],
     agent=interview_preparer
 )
+
+
+## USE THIS FOR BEDROCK
+from langchain_community.llms import Bedrock
+ 
+manager_llm = LLM(model="us.amazon.nova-pro-v1:0", temperature=0.7)
+
+
+job_application_crew = Crew(
+    agents=[researcher,
+            profiler,
+            resume_strategist,
+            interview_preparer],
+
+    tasks=[research_task,
+           profile_task,
+           resume_strategy_task,
+           interview_preparation_task],
+    llm=manager_llm,
+    verbose=True,
+    debug=True
+)
+
+## Hard code for testing
+job_application_inputs = {
+    'job_posting_url': 'https://www.arionkoder.com/careers/4122129008', # Replace the job posting URL
+    'github_url': 'https://github.com/AjBorbzz', # Replace with your GitHub URL
+    'linkedin_profile': 'https://www.linkedin.com/in/albert-borbe-489337140/' # Replace with your personal website URL
+}

@@ -1,17 +1,12 @@
 import os
-from dotenv import load_dotenv
 import anthropic 
 import sys
 from utils.logging_config import log_duration
-
-load_dotenv()
-
+from utils.ioc_utils import get_api_key
 
 
-def get_claude_api():
-    return os.getenv("ANTHROPIC_API_KEY")
+claude_api = get_api_key("ANTHROPIC_API_KEY")
 
-claude_api = get_claude_api()
 client = anthropic.Anthropic(api_key=claude_api)
 
 @log_duration

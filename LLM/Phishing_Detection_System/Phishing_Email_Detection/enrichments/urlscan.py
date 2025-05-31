@@ -26,7 +26,7 @@ def urlscan_submit(url):
 
     response = requests.post(URLSCAN_URL, headers=headers, data=json.dumps(data))
     if response.status_code == 200 and response.json().get("result"):
-        result_id = response.json().get("result").json().get("result")
+        result_id = response.json().get("result")
         logger.info(f"-- urlscan_submit : request_id - {result_id} --")
         logger.info(f"-- urlscan_submit : waiting 15 seconds for the result  --")
         response = get_result(result_id, max_retries=5, wait_seconds=15)

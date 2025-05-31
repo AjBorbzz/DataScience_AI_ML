@@ -77,7 +77,7 @@ def process_phishing_detection(data):
     """
 
 
-    message = client.messages.create(model="claude-3-7-sonnet-20250219",
+    message = client.messages.create(model="claude-sonnet-4-20250514",
                                     max_tokens=1000,
                                     temperature=1,
                                     system="You are a Security Automation Engineer who will integrate this LLM.",

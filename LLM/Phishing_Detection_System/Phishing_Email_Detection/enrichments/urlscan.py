@@ -25,8 +25,8 @@ def urlscan_submit(url):
     }
 
     response = requests.post(URLSCAN_URL, headers=headers, data=json.dumps(data))
-    if response.status_code == 200 and response.json().get("result"):
-        result_id = response.json().get("result")
+    if response.status_code == 200 and response.json():
+        result_id = response.json().get("uuid")
         logger.info(f"-- urlscan_submit : request_id - {result_id} --")
         logger.info(f"-- urlscan_submit : waiting 15 seconds for the result  --")
         response = get_result(result_id, max_retries=5, wait_seconds=15)
@@ -52,9 +52,19 @@ def get_result(result_id, max_retries=5, wait_seconds=15):
     logger.error(f"-- get_result: failed after {max_retries} attempts --")
     raise TimeoutError(f"Result not ready after {max_retries} attempts for ID {result_id}")
 
+def process_verdict(verdicts):
+    return {
+        'overall': verdicts.get('overall'),
+        'urlscan_score': verdicts.get('urlscan').get('score'),
+        'community_score': verdicts.get('community').get('score')
+    }
 
-if __name__ == '__main__':
+def main():
     url = "https://www.netflix.com/ph-en/"
     response = urlscan_submit(url)
-    print("\n\n")
-    print(response)
+    verdicts = response.get("verdicts")
+    print(f"verdict: {verdicts}")
+
+if __name__ == '__main__':
+    main()
+    

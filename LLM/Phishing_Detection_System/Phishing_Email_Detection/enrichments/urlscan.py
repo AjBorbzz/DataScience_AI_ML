@@ -1,17 +1,34 @@
 import requests
+import json
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.ioc_utils import get_api_key
+from utils.logging_config import log_duration
+import logging
+logger = logging.getLogger(__name__)
 
-def check_urlscan(url):
-    response = requests.get(f"https://urlscan.io/api/v1/search/?q=domain:{url}")
-    if response.status_code == 200 and response.json().get("results"):
-        verdict = response.json()["results"][0].get("verdicts", {})
-        malicious = verdict.get("overall", {}).get("malicious", False)
-        return {"source": "URLScan", "malicious": malicious, "score": 100 if malicious else 0}
-    return {"source": "URLScan", "malicious": False, "score": 0}
+URLSCAN_URL = "https://urlscan.io/api/v1/scan/"
 
+@log_duration
+def urlscan_submit(url):
+    logger.info("-- urlscan_submit started --")
+    headers = {
+        'API-Key': get_api_key("URLSCAN_API_KEY"),
+        'Content-Type':'application/json'
+    }
 
-print(get_api_key("VIRUSTOTAL_API_KEY"))
+    data = {
+        "url": url,
+        "visibility": "public"
+    }
+
+    response = requests.post(URLSCAN_URL, headers=headers, data=json.dumps(data))
+    if response.status_code == 200 and response.json().get("result"):
+        result_id = response.json().get("result").json().get("result")
+        logger.info(f"-- urlscan_submit : request_id - {result_id} --")
+        
+        
+        
+

@@ -1,3 +1,4 @@
+from typing import Dict, List, Any
 import re
 import pandas as pd
 import numpy as np
@@ -203,3 +204,7 @@ def save_data_to_json(data, file_name="data.json"):
     with open(DATA_DIR / file_name , 'w+') as f:
         json.dump(data, f, indent=4)
     logger.info(f"--== {save_data_to_json.__name__} : saved {file_name}")
+
+def extract_urls(text: str) -> List[str]:
+    url_regex = r'https?://[^\s]+'
+    return re.findall(url_regex, text)

@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 import time
 from functools import wraps
+import json
 
 def log_duration(func):
     """
@@ -50,3 +51,8 @@ def setup_logging():
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+
+
+def log_dict_pretty(logger, data: dict, level=logging.INFO, msg: str = ""):
+    formatted = json.dumps(data, indent=2)
+    logger.log(level, f"{msg}\n{formatted}")

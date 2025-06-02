@@ -208,3 +208,4 @@ def save_data_to_json(data, file_name="data.json"):
 def extract_urls(text: str) -> List[str]:
     url_regex = r'https?://[^\s]+'
     return re.findall(url_regex, text)
+

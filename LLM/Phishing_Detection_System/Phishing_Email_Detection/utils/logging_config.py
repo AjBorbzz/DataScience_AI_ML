@@ -4,7 +4,7 @@ import time
 from functools import wraps
 import json
 
-def log_duration(func):
+def log_func_name_duration(func):
     """
     Decorator to log the duration of function execution.
     """
@@ -56,3 +56,4 @@ def setup_logging():
 def log_dict_pretty(logger, data: dict, level=logging.INFO, msg: str = ""):
     formatted = json.dumps(data, indent=2)
     logger.log(level, f"{msg}\n{formatted}")
+

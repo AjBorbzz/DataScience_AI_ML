@@ -1,5 +1,6 @@
 # Ignore Python virtual environments
 **/venv/
+**/rosetta_env/
 
 # Ignore datasets and sample data
 **/datasets/
@@ -13,6 +14,7 @@ introduction/datasets/
 PyTorch/data/
 PyTorch/data/FashionMNIST/
 
+
 # Ignore data files
 *.csv
 **/.csv
@@ -24,6 +26,7 @@ PyTorch/data/FashionMNIST/
 **/.pkl
 **/chroma.sqlite3
 **/chroma_db/
+
 
 # Ignore media files
 *.jpg

@@ -1,6 +1,7 @@
 # Ignore Python virtual environments
 **/venv/
 **/rosetta_env/
+**/*env*/
 
 # Ignore datasets and sample data
 **/datasets/

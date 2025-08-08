@@ -1,0 +1,56 @@
+{
+  "EventID": 4624,
+  "EventTime": "2025-08-06T11:24:37.123Z",
+  "Hostname": "DC01.corp.contoso.com",
+  "EventSource": "Microsoft-Windows-Security-Auditing",
+  "Level": "Information",
+  "Keywords": "Audit Success",
+  "Channel": "Security",
+  "Computer": "DC01.corp.contoso.com",
+  "Message": "An account was successfully logged on.",
+  "SubjectUserSid": "S-1-5-18",
+  "SubjectUserName": "DC01$",
+  "SubjectDomainName": "CORP",
+  "SubjectLogonId": "0x3e7",
+  "TargetUserSid": "S-1-5-21-3623811015-3361044348-30300820-1103",
+  "TargetUserName": "AdminUser01",
+  "TargetDomainName": "CORP",
+  "TargetLogonId": "0x1B4D2A5",
+  "LogonType": 10,
+  "LogonTypeDescription": "RemoteInteractive",
+  "LogonProcessName": "User32",
+  "AuthenticationPackageName": "Negotiate",
+  "WorkstationName": "WIN10-WORKSTATION01",
+  "LogonGuid": "{1dbf68e2-1f2c-45e0-bc45-1d4737c92f3f}",
+  "TransmittedServices": "-",
+  "LmPackageName": "-",
+  "KeyLength": "0",
+  "ProcessId": "0x4c0",
+  "ProcessName": "C:\\Windows\\System32\\winlogon.exe",
+  "IpAddress": "192.168.55.78",
+  "IpPort": "51864",
+  "ElevatedToken": "Yes",
+  "VirtualAccount": "No",
+  "LinkedLogonId": "0x0",
+  "RestrictedAdminMode": "-",
+  "NetworkAccountName": "-",
+  "NetworkAccountDomain": "-",
+  "IsPrivilegedAccount": true,
+  "UserGroups": [
+    "S-1-5-32-544", // Administrators
+    "S-1-5-32-548", // Account Operators
+    "S-1-5-21-...-512" // Domain Admins
+  ],
+  "Tags": [
+    "login",
+    "privileged_account",
+    "rdp",
+    "windows",
+    "audit_success",
+    "admin_login"
+  ],
+  "AlertID": null,
+  "ThreatScore": 85,
+  "Notes": "Logon type 10 with elevated token from internal IP. User is a member of Domain Admins. Cross-reference against scheduled access and behavior baselines."
+}
+

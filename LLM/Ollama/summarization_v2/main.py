@@ -10,3 +10,10 @@ class SummarizeReport(BaseModel):
     source: Optional[str] = Field(None, description="Source system e.g., firewall, EDR, xdr, syslog")
     format: Optional[str] = Field(None, description="Log format e.g., json, cef, syslog, leef")
     language: Literal["en"] | None = Field("en", description="Currently only English is tuned in the prompt")
+
+
+class SummarizeResponse(BaseModel):
+    summary: str
+    risk: Literal["low", "medium", "high", "unknown"]
+    ioc_candidates: List[str] = []
+    reasoning: Optional[str] = None

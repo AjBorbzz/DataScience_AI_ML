@@ -12,7 +12,7 @@ class SummarizeReport(BaseModel):
     language: Literal["en"] | None = Field("en", description="Currently only English is tuned in the prompt")
 
 
-class SummarizeResponse(BaseModel):
+class SummarizeRequest(BaseModel):
     summary: str
     risk: Literal["low", "medium", "high", "unknown"]
     ioc_candidates: List[str] = []

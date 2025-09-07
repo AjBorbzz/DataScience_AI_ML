@@ -51,3 +51,6 @@ kaggle.json
 **/FashionMNIST
 
 **/logs/
+
+**/storage
+**/*.faiss

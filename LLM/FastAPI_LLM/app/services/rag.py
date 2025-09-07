@@ -42,4 +42,14 @@ def _chunk_text(text: str, chunk_size: int, overlap: int)->List[str]:
         start += chunk_size - overlap
     return [c.strip() for c in chunks if c.strip()]
 
-
+def ingest_pdf(pdf_path: Path) -> int:
+    _ensure_models_loaded()
+    reader = PdfReader(str(pdf_path))
+    pages = [p.extract_text() or "" for p in reader.pages]
+    text = "\n\n".join(pages)
+    chunks = _chunk_text(text, settings.CHUNK_SIZE, settings.CHUNK_OVERLAP)
+    embeddings = _model.encode(chunks, convert_to_numpy=True, normalize_embeddings=True)
+    _index.add(embeddings.astype(np.float32))
+    _docs.extend(chunks)
+    _save_index()
+    return len(chunks)

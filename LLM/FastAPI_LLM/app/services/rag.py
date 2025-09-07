@@ -53,3 +53,16 @@ def ingest_pdf(pdf_path: Path) -> int:
     _docs.extend(chunks)
     _save_index()
     return len(chunks)
+
+def retrieve(query: str, top_k: int | None = None) -> List[Tuple[str, float]]:
+    _ensure_models_loaded()
+    top_k = top_k or settings.TOP_K
+    q = _model.encode([query], convert_to_numpy=True, normalize_embeddings=True)
+    scores, idxs = _index.search(q.astype(np.float32), top_k)
+    results: List[Tuple[str, float]] = []
+    for i, s in zip(idxs[0], scores[0]):
+        if i == -1:
+            continue
+        results.append((_docs[i], float[s]))
+    return results
+

@@ -22,3 +22,21 @@ class OllamaLLM(LLMBackend):
         data = r.json()
         return data.get("message", {}).get("content", "")
     
+class LlamaCppLLM(LLMBackend):
+    def __init__(self):
+        from llama_cpp import Llama
+        self.llm = Llama(
+        model_path=str(settings.LLAMA_MODEL_PATH),
+        n_ctx=settings.LLAMA_CTX_SIZE,
+        n_threads=settings.LLAMA_THREADS,
+        chat_format="llama-3",
+        )
+
+    def chat(self, messages: List[Dict[str, str]], max_tokens: int = 512) -> str:
+        out = self.llm.create_chat_completion(messages=messages, max_tokens=max_tokens)
+        return out["choices"][0]["message"]["content"].strip()
+    
+def get_llm() -> LLMBackend:
+    if settings.LLM_BACKEND.upper() == "OLLAMA":
+        return OllamaLLM()
+    return LlamaCppLLM

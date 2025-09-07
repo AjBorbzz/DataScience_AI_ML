@@ -66,3 +66,14 @@ def retrieve(query: str, top_k: int | None = None) -> List[Tuple[str, float]]:
         results.append((_docs[i], float[s]))
     return results
 
+def build_prompt(user_query: str, contexts: List[str]) -> list[dict[str, str]]:
+    system = (
+    "You are a helpful assistant that answers only using the provided context. "
+    "If the answer is not in the context, say you don't know."
+    )
+    context_block = "\n\n".join([f"[Context {i+1}]\n{c}" for i, c in enumerate(contexts)])
+    user_msg = f"Answer the question using ONLY the context below.\n\n{context_block}\n\nQuestion: {user_query}"
+    return [
+        {"role": "system", "content": system},
+        {"role": "user", "content": user_msg},
+        ]

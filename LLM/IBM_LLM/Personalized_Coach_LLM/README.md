@@ -14,3 +14,15 @@ This replaces IBM Watson dependencies with a fully local and private setup.
 - Production-ready file structure with Docker support.
 
 - Privacy-first: no external cloud APIs required.
+
+
+## Why private?
+- Keep data on your machines (compliance / privacy).
+- No vendor lock-in; switch between Ollama or llama.cpp.
+
+## Run (local)
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

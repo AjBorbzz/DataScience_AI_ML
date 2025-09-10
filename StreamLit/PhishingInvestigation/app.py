@@ -220,3 +220,38 @@ with st.sidebar:
     if "report_payload" not in st.session_state:
         st.session_state.report_payload = {}
     # Export buttons wired later when payload is assembled
+
+
+st.title("Phishing Investigation Report")
+st.caption("Streamlit UI for analysts to capture evidence, enrichment, and a defensible verdict.")
+
+# Data containers in session
+if "indicators" not in st.session_state:
+    st.session_state.indicators = DEFAULT_INDICATORS.copy()
+if "timeline" not in st.session_state:
+    st.session_state.timeline = DEFAULT_TIMELINE.copy()
+if "flags" not in st.session_state:
+    st.session_state.flags = DEFAULT_FLAGS.copy()
+
+
+meta_tab, email_tab, ind_tab, enrich_tab, actions_tab, timeline_tab, notes_tab, export_tab = st.tabs([
+    "Case Metadata", "Email", "Indicators", "Enrichment", "Actions", "Timeline", "Notes", "Export"
+])
+
+with meta_tab:
+    st.subheader("Case Metadata")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        report_date = st.date_input("Report Date", value=datetime.utcnow())
+        detection_source = st.selectbox("Detection Source", ["User Report", "SIEM Alert", "Email Gateway", "Hunting", "Other"], index=1)
+    with col2:
+        campaign = st.text_input("Campaign / Cluster Tag", value="")
+        mitre = st.multiselect("MITRE ATT&CK (Suspected)", [
+            "TA0001 - Initial Access",
+            "TA0002 - Execution",
+            "TA0009 - Collection",
+            "TA0011 - Command and Control",
+        ])
+    with col3:
+        customer = st.text_input("Customer / Stakeholder", value="Internal")
+        sensitivity = st.selectbox("Report Sensitivity", ["Public", "Internal", "Confidential"], index=1)

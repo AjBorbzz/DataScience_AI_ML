@@ -138,3 +138,68 @@ def parse_eml(file_bytes: bytes) -> Dict[str, Any]:
         return {"headers": headers, "body_preview": body_joined[:4000], "urls": urls}
     except Exception as e:
         return {"error": str(e)}
+    
+
+def to_markdown(payload: Dict[str, Any]) -> str:
+    """Build a clean Markdown report ready for export."""
+    md = []
+    add = md.append
+    add(f"# Phishing Investigation Report\n")
+    add(f"_Generated: {datetime.utcnow().isoformat(timespec='seconds')}Z_\n")
+    meta = payload.get("meta", {})
+    add("\n## Case Metadata")
+    for k in ["case_id", "analyst", "severity", "status", "environment", "business_unit"]:
+        add(f"- **{k.replace('_',' ').title()}**: {meta.get(k,'')}")
+
+    email = payload.get("email", {})
+    add("\n## Email Details")
+    for k in ["from", "to", "cc", "subject", "date", "message_id", "return_path"]:
+        add(f"- **{k.replace('_',' ').title()}**: {email.get(k,'')}")
+
+    add("\n### Authentication")
+    for k in ["spf", "dkim", "dmarc", "auth_results"]:
+        add(f"- **{k.upper()}**: {email.get(k,'')}")
+
+    add("\n## Indicators")
+    inds = payload.get("indicators", [])
+    if inds:
+        add("| Type | Value | Source | VT Score | Reputation | Notes |")
+        add("|---|---|---|---:|---|---|")
+        for ind in inds:
+            add(f"| {ind.get('type','')} | {ind.get('value','')} | {ind.get('source','')} | {ind.get('vt_score','')} | {ind.get('reputation','')} | {ind.get('notes','')} |")
+    else:
+        add("_None_")
+
+    add("\n## Analysis Flags")
+    flags = payload.get("flags", {})
+    for k, v in flags.items():
+        add(f"- {k.replace('_',' ').title()}: {'✅' if v else '❌'}")
+
+    vr = payload.get("verdict", {})
+    add("\n## Verdict")
+    add(f"- **Risk Score**: {vr.get('score','')}\n- **Verdict**: {vr.get('verdict','')}")
+
+    add("\n## Actions Taken")
+    acts = payload.get("actions", [])
+    for a in acts:
+        add(f"- {a}")
+    if not acts:
+        add("- (none)")
+
+    add("\n## Timeline")
+    tline = payload.get("timeline", [])
+    for t in tline:
+        add(f"- {t.get('ts','')} — **{t.get('actor','')}**: {t.get('event','')}")
+
+    notes = payload.get("notes", "")
+    if notes:
+        add("\n## Analyst Notes\n")
+        add(notes)
+
+    img_names = payload.get("images", [])
+    if img_names:
+        add("\n## Evidence Screenshots (filenames)\n")
+        for n in img_names:
+            add(f"- {n}")
+
+    return "\n".join(md)

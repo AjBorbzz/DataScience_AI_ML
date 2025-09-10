@@ -203,3 +203,20 @@ def to_markdown(payload: Dict[str, Any]) -> str:
             add(f"- {n}")
 
     return "\n".join(md)
+
+
+st.sidebar.header("Case Controls")
+with st.sidebar:
+    st.markdown("Manage case-level details and export your report.")
+    case_id = st.text_input("Case ID", value="PHISH-0001")
+    analyst = st.text_input("Analyst", value="")
+    severity = st.select_slider("Severity", options=["Low","Medium","High","Critical"], value="Medium")
+    status = st.selectbox("Status", ["Open","Under Review","Containment","Eradication","Closed"], index=0)
+    environment = st.text_input("Environment / Tenant", value="Production")
+    business_unit = st.text_input("Business Unit", value="")
+
+    st.divider()
+    st.caption("Export")
+    if "report_payload" not in st.session_state:
+        st.session_state.report_payload = {}
+    # Export buttons wired later when payload is assembled

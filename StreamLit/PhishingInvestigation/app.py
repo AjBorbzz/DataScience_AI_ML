@@ -91,3 +91,50 @@ def calc_risk(flags: Dict[str, bool], indicators: List[Dict[str, Any]]) -> Dict[
         verdict = "Benign / No Action"
         tone = "ok"
     return {"score": total, "verdict": verdict, "tone": tone}
+
+def extract_urls(text: str) -> List[str]:
+    if not text:
+        return []
+    url_pattern = r"(https?://[\w\-\._~:/%\?#\[\]@!$&'()*+,;=]+)"
+    return list(sorted(set(re.findall(url_pattern, text, flags=re.IGNORECASE))))
+
+
+def parse_eml(file_bytes: bytes) -> Dict[str, Any]:
+    try:
+        msg = BytesParser(policy=policy.default).parsebytes(file_bytes)
+        headers = {
+            "From": str(msg.get("From", "")),
+            "To": str(msg.get("To", "")),
+            "Cc": str(msg.get("Cc", "")),
+            "Subject": str(msg.get("Subject", "")),
+            "Date": str(msg.get("Date", "")),
+            "Message-ID": str(msg.get("Message-ID", "")),
+            "Return-Path": str(msg.get("Return-Path", "")),
+            "Received": "\n".join(msg.get_all("Received", []))[:5000],
+            "Authentication-Results": str(msg.get("Authentication-Results", "")),
+        }
+        # Walk body and collect text parts
+        body_texts = []
+        if msg.is_multipart():
+            for part in msg.walk():
+                ctype = part.get_content_type()
+                if ctype == "text/plain":
+                    try:
+                        body_texts.append(part.get_content())
+                    except Exception:
+                        pass
+                elif ctype == "text/html":
+                    try:
+                        body_texts.append(part.get_content())
+                    except Exception:
+                        pass
+        else:
+            try:
+                body_texts.append(msg.get_content())
+            except Exception:
+                pass
+        body_joined = "\n\n".join([t if isinstance(t, str) else str(t) for t in body_texts])
+        urls = extract_urls(body_joined)
+        return {"headers": headers, "body_preview": body_joined[:4000], "urls": urls}
+    except Exception as e:
+        return {"error": str(e)}

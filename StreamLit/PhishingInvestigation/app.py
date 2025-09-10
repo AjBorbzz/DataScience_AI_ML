@@ -305,3 +305,23 @@ with email_tab:
         dkim = st.selectbox("DKIM", ["pass","fail","none","unknown"], index=0)
     with a3:
         dmarc = st.selectbox("DMARC", ["pass","fail","none","unknown"], index=0)
+
+
+with ind_tab:
+    st.subheader("Indicators of Compromise (IoCs)")
+    st.caption("Edit in place. Add URLs, IPs, domains, hashes, emails. Fill reputation as enrichment completes.")
+
+    st.session_state.indicators = st.data_editor(
+        st.session_state.indicators,
+        num_rows="dynamic",
+        use_container_width=True,
+        column_config={
+            "type": st.column_config.SelectboxColumn(options=["url","domain","ip","hash","email"], width="small"),
+            "value": st.column_config.TextColumn(width="large"),
+            "source": st.column_config.SelectboxColumn(options=["extracted","email_body","header","gateway","siem","manual"], width="small"),
+            "vt_score": st.column_config.TextColumn(label="VT Score", width="small"),
+            "reputation": st.column_config.SelectboxColumn(options=REPUTATION_ORDER, width="small"),
+            "notes": st.column_config.TextColumn(width="medium"),
+        },
+        hide_index=True,
+    )

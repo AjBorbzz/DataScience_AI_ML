@@ -66,3 +66,28 @@ WEIGHTS = {
 
 
 REPUTATION_ORDER = ["malicious", "suspicious", "unknown", "benign"]
+
+
+def calc_risk(flags: Dict[str, bool], indicators: List[Dict[str, Any]]) -> Dict[str, Any]:
+    base = sum(WEIGHTS[k] for k, v in flags.items() if v)
+    # Indicator-based adjustments
+    ind_boost = 0
+    for ind in indicators:
+        rep = (ind.get("reputation") or "").lower()
+        if rep == "malicious":
+            ind_boost += 25
+        elif rep == "suspicious":
+            ind_boost += 10
+        elif rep == "benign":
+            ind_boost -= 5
+    total = max(0, min(100, base + ind_boost))
+    if total >= 70:
+        verdict = "Malicious"
+        tone = "crit"
+    elif total >= 40:
+        verdict = "Suspicious"
+        tone = "warn"
+    else:
+        verdict = "Benign / No Action"
+        tone = "ok"
+    return {"score": total, "verdict": verdict, "tone": tone}

@@ -255,3 +255,53 @@ with meta_tab:
     with col3:
         customer = st.text_input("Customer / Stakeholder", value="Internal")
         sensitivity = st.selectbox("Report Sensitivity", ["Public", "Internal", "Confidential"], index=1)
+
+with email_tab:
+    st.subheader("Email Artifacts")
+    st.caption("Upload a .eml to auto-extract headers and URLs, or fill manually.")
+    eml = st.file_uploader(".eml file", type=["eml"]) 
+    parsed = {}
+    if eml is not None:
+        parsed = parse_eml(eml.read())
+        if parsed.get("error"):
+            st.error(f"Failed to parse EML: {parsed['error']}")
+        else:
+            with st.expander("Parsed Headers"):
+                st.json(parsed.get("headers", {}))
+            with st.expander("Body Preview (truncated)"):
+                st.code(parsed.get("body_preview", ""))
+
+            # Seed indicators with extracted URLs if empty values present
+            urls = parsed.get("urls", [])
+            if urls:
+                for u in urls:
+                    st.session_state.indicators.append({
+                        "type": "url",
+                        "value": u,
+                        "source": "email_body",
+                        "vt_score": "",
+                        "reputation": "unknown",
+                        "notes": "extracted from body"
+                    })
+                st.info(f"Extracted {len(urls)} URL(s) and appended to Indicators.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        email_from = st.text_input("From", value=(parsed.get("headers", {}).get("From", "") if parsed else ""))
+        email_to = st.text_input("To", value=(parsed.get("headers", {}).get("To", "") if parsed else ""))
+        email_cc = st.text_input("Cc", value=(parsed.get("headers", {}).get("Cc", "") if parsed else ""))
+        subject = st.text_input("Subject", value=(parsed.get("headers", {}).get("Subject", "") if parsed else ""))
+    with col2:
+        email_date = st.text_input("Date", value=(parsed.get("headers", {}).get("Date", "") if parsed else ""))
+        message_id = st.text_input("Message-ID", value=(parsed.get("headers", {}).get("Message-ID", "") if parsed else ""))
+        return_path = st.text_input("Return-Path", value=(parsed.get("headers", {}).get("Return-Path", "") if parsed else ""))
+        auth_results = st.text_area("Authentication-Results", value=(parsed.get("headers", {}).get("Authentication-Results", "") if parsed else ""), height=80)
+
+    st.markdown("### Authentication Summary")
+    a1, a2, a3 = st.columns(3)
+    with a1:
+        spf = st.selectbox("SPF", ["pass","fail","softfail","neutral","none","unknown"], index=0)
+    with a2:
+        dkim = st.selectbox("DKIM", ["pass","fail","none","unknown"], index=0)
+    with a3:
+        dmarc = st.selectbox("DMARC", ["pass","fail","none","unknown"], index=0)

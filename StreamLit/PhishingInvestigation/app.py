@@ -1,0 +1,68 @@
+import StreamLit as st
+import re
+import json
+from datetime import datetime
+from email import policy
+from email.parser import BytesParser
+from io import BytesIO
+from typing import List, Dict, Any
+
+
+st.set_page_config(
+page_title="Phishing Investigation Report",
+page_icon="🕵️‍♂️",
+layout="wide",
+)
+
+st.markdown(
+"""
+<style>
+.small { font-size: 0.85rem; opacity: 0.85; }
+.muted { color: #6b7280; }
+.badge { display:inline-block; padding:2px 8px; border-radius:9999px; background:#eef2ff; }
+.ok { background:#ecfdf5; }
+.warn { background:#fffbeb; }
+.crit { background:#fef2f2; }
+.rule-header{ font-weight:600; margin-top:0.5rem; }
+.section-card{ padding:1rem; border-radius:0.75rem; border:1px solid #e5e7eb; background:white; }
+</style>
+""",
+unsafe_allow_html=True,
+)
+
+
+DEFAULT_INDICATORS = [
+{"type": "url", "value": "", "source": "extracted", "vt_score": "", "reputation": "unknown", "notes": ""}
+]
+
+
+DEFAULT_TIMELINE = [
+{"ts": datetime.utcnow().isoformat(timespec="seconds") + "Z", "actor": "analyst", "event": "Investigation created"}
+]
+
+
+DEFAULT_FLAGS = {
+"spoofed_display_name": False,
+"suspicious_links": True,
+"attachment_macros": False,
+"auth_failures": False,
+"brand_impersonation": True,
+"urgent_language": True,
+"sender_mismatch": False,
+"new_sender": True,
+}
+
+
+WEIGHTS = {
+"spoofed_display_name": 10,
+"suspicious_links": 25,
+"attachment_macros": 20,
+"auth_failures": 15,
+"brand_impersonation": 15,
+"urgent_language": 5,
+"sender_mismatch": 20,
+"new_sender": 5,
+}
+
+
+REPUTATION_ORDER = ["malicious", "suspicious", "unknown", "benign"]

@@ -325,3 +325,15 @@ with ind_tab:
         },
         hide_index=True,
     )
+
+with actions_tab:
+    st.subheader("Actions Taken")
+    st.caption("Track containment/eradication steps for auditability.")
+    actions = st.experimental_data_editor(
+        [{"action": "Blocked sender in SEG"}, {"action": "Quarantined email copies"}],
+        key="actions_editor",
+        num_rows="dynamic",
+        use_container_width=True,
+        column_config={"action": st.column_config.TextColumn(width="large", help="Describe the action you performed")},
+        hide_index=True,
+    )

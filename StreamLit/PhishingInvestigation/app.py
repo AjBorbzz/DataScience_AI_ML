@@ -1,4 +1,4 @@
-import StreamLit as st
+import streamlit as st
 import re
 import json
 from datetime import datetime
@@ -251,6 +251,7 @@ with meta_tab:
             "TA0002 - Execution",
             "TA0009 - Collection",
             "TA0011 - Command and Control",
+            "TA0013 - Test"
         ])
     with col3:
         customer = st.text_input("Customer / Stakeholder", value="Internal")
@@ -329,7 +330,7 @@ with ind_tab:
 with actions_tab:
     st.subheader("Actions Taken")
     st.caption("Track containment/eradication steps for auditability.")
-    actions = st.experimental_data_editor(
+    actions = st.data_editor(
         [{"action": "Blocked sender in SEG"}, {"action": "Quarantined email copies"}],
         key="actions_editor",
         num_rows="dynamic",

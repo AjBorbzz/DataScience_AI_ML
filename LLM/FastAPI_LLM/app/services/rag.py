@@ -14,7 +14,7 @@ _docs: List[str] = []
 
 
 def _ensure_models_loaded()-> None:
-    global _models, _index, _docs
+    global _model, _index, _docs
     if _model is None:
         _model = SentenceTransformer("sentence-transofmers/all-MiniLM-L6-v2")
     if _index is None:

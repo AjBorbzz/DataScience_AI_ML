@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     FAISS_INDEX_PATH: Path = STORAGE_DIR / "index.faiss"
     DOCS_METADATA_PATH: Path = STORAGE_DIR / "docs.pkl"
 
-    LLM_BACKEND: str = Field("OLLAMA", regex="^(OLLAMA|LLAMA_CPP)$")
+    LLM_BACKEND: str = Field("OLLAMA", pattern="^(OLLAMA|LLAMA_CPP)$")
 
     # Ollama Config: Replace for production - Currently for POC - local dev env
     OLLAMA_BASE_URL: str = "http://localhost:11434"

@@ -8,7 +8,7 @@ router = APIRouter(prefix="/documents", tags=["documents"])
 
 @router.post("/process-document")
 async def process_document(file: UploadFile = File(...)):
-    if not file.filename.lower().endwith(".pdf"):
+    if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
     
     dest = settings.UPLOAD_DIR / file.filename

@@ -72,6 +72,11 @@ curl -H "Content-Type: application/json" \
 
 Receive a contextual answer generated only from the uploaded PDF.
 
+### Run the server:
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 ### Key Takeaway
 
 This project is your blueprint for building private, document-aware chatbots using modern LLMs. It balances simplicity and production-readiness, making it useful as a starting point for enterprise, research, and personal AI projects.

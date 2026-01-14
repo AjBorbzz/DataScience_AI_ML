@@ -17,3 +17,11 @@ META_PATH = INDEX_DIR / "bible_asv_meta.pkl"
 
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+def load_records():
+    recs = []
+    with JSONL.open("r", encoding="utf-8") as f:
+        for line in f:
+            recs.append(json.loads(line))
+    return recs

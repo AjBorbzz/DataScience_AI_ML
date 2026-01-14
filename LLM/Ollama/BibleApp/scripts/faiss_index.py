@@ -36,7 +36,7 @@ def main():
     emb = np.array(emb, dtype="float32")
 
     dim = emb.shape[1]
-    index = faiss.IndexFlatIP(dim)  # cosine via normalized vectors + inner product
+    index = faiss.IndexFlatIP(dim)
     index.add(emb)
 
     faiss.write_index(index, str(FAISS_PATH))
@@ -44,9 +44,9 @@ def main():
         pickle.dump(recs, f)
 
 
-    print(f"Index saved: {FAISS_PATH}")
-    print(f"Meta saved: {META_PATH}")
-    print(f"Records: {len(recs)}  Dim: {dim}")
+    # print(f"Index saved: {FAISS_PATH}")
+    # print(f"Meta saved: {META_PATH}")
+    # print(f"Records: {len(recs)}  Dim: {dim}")
 
 if __name__ == "__main__":
     main()

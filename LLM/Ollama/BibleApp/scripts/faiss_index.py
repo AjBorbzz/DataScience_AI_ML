@@ -25,3 +25,20 @@ def load_records():
         for line in f:
             recs.append(json.loads(line))
     return recs
+
+
+def main():
+    recs = load_records()
+    texts = [r["text"] for r in recs]
+
+    model = SentenceTransformer(MODEL_NAME)
+    emb = model.encode(texts, normalize_embeddings=True, batch_size=64, show_progress_bar=True)
+    emb = np.array(emb, dtype="float32")
+
+    dim = emb.shape[1]
+    index = faiss.IndexFlatIP(dim)  # cosine via normalized vectors + inner product
+    index.add(emb)
+
+    faiss.write_index(index, str(FAISS_PATH))
+    with META_PATH.open("wb") as f:
+        pickle.dump(recs, f)

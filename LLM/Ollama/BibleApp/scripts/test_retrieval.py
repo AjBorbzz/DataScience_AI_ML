@@ -30,3 +30,14 @@ TEST_CASES = [
         "anchors": ["forgive", "forgiven", "mercy", "trespass", "debt"],
     },
 ]
+
+
+def fail(msg: str) -> None:
+    print(f"[FAIL] {msg}")
+    sys.exit(1)
+
+def warn(msg: str) -> None:
+    print(f"[WARN] {msg}")
+
+def ok(msg: str) -> None:
+    print(f"[OK] {msg}")

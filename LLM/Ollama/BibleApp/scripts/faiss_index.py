@@ -44,9 +44,9 @@ def main():
         pickle.dump(recs, f)
 
 
-    # print(f"Index saved: {FAISS_PATH}")
-    # print(f"Meta saved: {META_PATH}")
-    # print(f"Records: {len(recs)}  Dim: {dim}")
+    print(f"Index saved: {FAISS_PATH}")
+    print(f"Meta saved: {META_PATH}")
+    print(f"Records: {len(recs)}  Dim: {dim}")
 
 if __name__ == "__main__":
     main()

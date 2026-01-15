@@ -27,3 +27,12 @@ def main():
 
     qv = model.encode([q], normalize_embeddings=True).astype("float32")
     D, I = index.search(np.array(qv), k=5)
+
+    for score, idx in zip(D[0], I[0]):
+        r = recs[idx]
+        print("-" * 80)
+        print(f"{fmt_ref(r)}  (score={float(score):.3f})")
+        print(r["text"])
+
+if __name__ == "__main__":
+    main()

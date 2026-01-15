@@ -41,3 +41,28 @@ def warn(msg: str) -> None:
 
 def ok(msg: str) -> None:
     print(f"[OK] {msg}")
+
+ef fmt_ref(r):
+    vs, ve = r["verse_start"], r["verse_end"]
+    if vs == ve:
+        return f'{r["book"]} {r["chapter"]}:{vs}'
+    return f'{r["book"]} {r["chapter"]}:{vs}-{ve}'
+
+def validate_record(r: dict) -> None:
+    required = ["id", "book", "chapter", "verse_start", "verse_end", "translation", "text"]
+    for k in required:
+        if k not in r:
+            fail(f"Missing key '{k}' in record: {r}")
+
+    if not isinstance(r["book"], str) or not r["book"].strip():
+        fail(f"Invalid book: {r.get('book')}")
+    if not isinstance(r["chapter"], int) or r["chapter"] <= 0:
+        fail(f"Invalid chapter: {r.get('chapter')}")
+    if not isinstance(r["verse_start"], int) or r["verse_start"] <= 0:
+        fail(f"Invalid verse_start: {r.get('verse_start')}")
+    if not isinstance(r["verse_end"], int) or r["verse_end"] <= 0:
+        fail(f"Invalid verse_end: {r.get('verse_end')}")
+    if r["verse_start"] > r["verse_end"]:
+        fail(f"Verse range inverted: {r['verse_start']} > {r['verse_end']} ({fmt_ref(r)})")
+    if not isinstance(r["text"], str) or len(r["text"].strip()) < 10:
+        fail(f"Text too short/empty for {fmt_ref(r)}")

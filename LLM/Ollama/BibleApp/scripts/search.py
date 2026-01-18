@@ -7,9 +7,9 @@ from sentence_transformers import SentenceTransformer
 
 
 INDEX_DIR = Path("index")
-FAISS_PATH = INDEX_DIR / "bible_kjv.faiss"
-META_PATH = INDEX_DIR / "bible_kjv_meta.pkl"
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2
+FAISS_PATH = INDEX_DIR / "bible_asv.faiss"
+META_PATH = INDEX_DIR / "bible_asv_meta.pkl"
+MODEL_NAME = "all-MiniLM-L6-v2"
 
 # Need to change paths
 

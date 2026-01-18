@@ -10,8 +10,6 @@ def main():
     bible = json.loads(INPUT_JSON.read_text(encoding="utf-8"))
     output = OUTPUT_JSONL.open("w", encoding="utf-8")
     
-    # for bible_item in bible:
-    #     print(bible_item['book_name'])
     for book, chapters in bible.items():
         for ch_str, verses in chapters.items():
             ch = int(ch_str)

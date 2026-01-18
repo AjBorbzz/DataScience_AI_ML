@@ -16,9 +16,6 @@ FAISS_PATH = INDEX_DIR / "bible_asv.faiss"
 META_PATH = INDEX_DIR / "bible_asv_meta.pkl"
 
 
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-
-
 def load_records():
     recs = []
     with JSONL.open("r", encoding="utf-8") as f:
@@ -31,7 +28,7 @@ def main():
     recs = load_records()
     texts = [r["text"] for r in recs]
 
-    model = SentenceTransformer(MODEL_NAME)
+    model = SentenceTransformer("all-MiniLM-L6-v2")
     emb = model.encode(texts, normalize_embeddings=True, batch_size=64, show_progress_bar=True)
     emb = np.array(emb, dtype="float32")
 

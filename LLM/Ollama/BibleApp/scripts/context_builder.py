@@ -1,4 +1,3 @@
-
 def ref_str(r):
     vs, ve = r["verse_start"], r["verse_end"]
     base = f'{r["book"]} {r["chapter"]}:{vs}'

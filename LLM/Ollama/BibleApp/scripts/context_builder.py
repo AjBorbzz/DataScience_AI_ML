@@ -1,9 +1,15 @@
+
+def ref_str(r):
+    vs, ve = r["verse_start"], r["verse_end"]
+    base = f'{r["book"]} {r["chapter"]}:{vs}'
+    return base if vs == ve else f"{base}-{ve}"
+
 def format_passage(r):
-    ref = f'{r["book"]} {r["chapter"]}:{r["verse_start"]}'
-    if r["verse_start"] != r["verse_end"]:
-        ref += f'-{r["verse_end"]}'
-    return f'{ref} (KJV)\n{r["text"]}'
+    return f'{ref_str(r)} ({r["translation"]})\n{r["text"]}'
 
 def build_context(passages, max_passages=6):
     selected = passages[:max_passages]
-    return "\n\n".join(format_passage(p) for p in selected)
+    allowed = [ref_str(p) for p in selected]
+    context = "\n\n".join(format_passage(p) for p in selected)
+    return context, allowed
+

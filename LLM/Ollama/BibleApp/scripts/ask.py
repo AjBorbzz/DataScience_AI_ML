@@ -1,6 +1,6 @@
-from prompts import BIBLE_SYSTEM_PROMPT
-from verse_guard import extract_refs, validate_refs
-from context_builder import build_context
+from prompts.bible_centric import BIBLE_SYSTEM_PROMPT
+from scripts.verse_guard import extract_refs, validate_refs
+from scripts.context_builder import build_context
 
 def answer_with_guardrails(question, rewrite_fn, retriever, llm_fn, max_tries=2):
     queries = rewrite_fn(question)

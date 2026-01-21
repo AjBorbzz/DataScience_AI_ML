@@ -49,3 +49,37 @@ def main():
             q = item['question']
 
             passages = retriever.search([q])
+            context, allowed_refs = build_context(passages)
+            
+            answer = llm_fn(
+                system_prompt=BIBLE_SYSTEM_PROMPT,
+                context=context,
+                question=q,
+                allowed_refs=allowed_refs
+            )
+
+            found = extract_refs(answer)
+            invalid = validate_refs(found, allowed_refs)
+
+            cite_valid = int(len(invalid) == 0)
+            fmt_valid = format_compliance(answer)
+            grd = groundedness(answer)
+
+            cite_ok += cite_valid 
+            fmt_ok += fmt_valid 
+            grounded_sum += grd 
+
+            rec = {
+                "id": item["id"],
+                "category": item["category"],
+                "question": q,
+                "allowed_refs": allowed_refs,
+                "found_refs": found,
+                "invalid_refs": invalid,
+                "citation_valid": cite_valid,
+                "format_valid": fmt_valid,
+                "groundedness": grd,
+                "answer": answer
+            }
+
+            

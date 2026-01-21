@@ -82,4 +82,19 @@ def main():
                 "answer": answer
             }
 
-            
+            out.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+    summary = {
+        "total": total,
+        "citation_valid_rate": cite_ok/ total if total else 0.0,
+        "format_valid_rate": fmt_ok / total if total else 0.0,
+        "avg_groundedness": grounded_sum / total if total else 0.0
+    }
+
+    print("SUMMARY")
+    for k,v in summary.items():
+        print(f"{k}: {v}")
+
+
+if __name__ == "__main__":
+    main()

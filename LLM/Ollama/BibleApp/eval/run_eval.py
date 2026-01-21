@@ -7,6 +7,8 @@ from scripts.context_builder import build_context
 from scripts.verse_guard import extract_refs, validate_refs 
 from prompts.bible_centric import BIBLE_SYSTEM_PROMPT
 
+from scripts.ollama_client import ollama_chat
+
 TESTSET = Path("eval/test_questions.jsonl")
 OUTDIR = Path("eval/out")
 OUTDIR.mkdir(parents=True, exist_ok=True)
@@ -29,8 +31,14 @@ def groundedness(answer: str) -> float:
     with_refs = sum(1 for p in paras if ":" in p)
     return with_refs / len(paras)
 
-def llm_fn(**kwargs):
-    raise NotImplementedError("Implement your LLM call here.")
+def llm_fn(system_prompt, context, question, allowed_refs):
+    return ollama_chat(
+        model="llama3:8b",
+        system_prompt=system_prompt,
+        context=context,
+        question=question,
+        allowed_refs=allowed_refs
+    )
 
 def main():
     retriever = BibleRetriever(top_k=8)

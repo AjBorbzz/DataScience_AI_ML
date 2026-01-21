@@ -1,7 +1,8 @@
 from scripts.verse_guard import extract_refs, validate_refs
 from scripts.context_builder import build_context
-from fake_llm import fake_llm_valid, fake_llm_invalid
-from fixtures_passage import PASSAGES
+from tests.fake_llm import fake_llm_valid, fake_llm_invalid
+from tests.fixtures_passage import PASSAGES
+
 
 def run_test(llm_fn, label):
     context, allowed_refs = build_context(PASSAGES)

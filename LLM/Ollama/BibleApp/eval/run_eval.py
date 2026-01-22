@@ -5,6 +5,7 @@ from datetime import datetime
 from scripts.retrieve import BibleRetriever
 from scripts.context_builder import build_context 
 from scripts.verse_guard import extract_refs, validate_refs 
+from scripts.guarded_answer import answer_with_guardrails
 from prompts.bible_centric import BIBLE_SYSTEM_PROMPT
 
 from scripts.ollama_client import ollama_chat
@@ -59,12 +60,14 @@ def main():
             passages = retriever.search([q])
             context, allowed_refs = build_context(passages)
             
-            answer = llm_fn(
-                system_prompt=BIBLE_SYSTEM_PROMPT,
-                context=context,
-                question=q,
-                allowed_refs=allowed_refs
-            )
+            answer, found, invalid, tries = answer_with_guardrails(
+                    system_prompt=BIBLE_SYSTEM_PROMPT,
+                    context=context,
+                    question=q,
+                    allowed_refs=allowed_refs,
+                    llm_fn=llm_fn,
+                    max_tries=2
+                )
 
             found = extract_refs(answer)
             invalid = validate_refs(found, allowed_refs)

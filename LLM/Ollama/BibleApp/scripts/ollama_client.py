@@ -1,13 +1,15 @@
 import requests
+from scripts.answer_template import ANSWER_TEMPLATE
 
 def ollama_chat(model, system_prompt, context, question, allowed_refs):
-    allowed_block = "Allowed References (cite ONLY these; do not cite anything else):\n" + \
+    allowed_block = "Allowed References (you must cite ONLY these; include at least one in EVERY section):\n" + \
                     "\n".join(f"- {r}" for r in allowed_refs)
 
     user_content = (
         f"{allowed_block}\n\n"
         f"Retrieved Scripture (use as the ONLY source):\n{context}\n\n"
-        f"User Question:\n{question}"
+        f"User Question:\n{question}\n\n"
+        f"{ANSWER_TEMPLATE}"
     )
 
     payload = {

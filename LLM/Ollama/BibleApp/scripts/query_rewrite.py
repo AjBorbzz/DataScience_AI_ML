@@ -2,10 +2,22 @@ import json
 import re
 from scripts.ollama_client import ollama_chat
 
-REWRITE_SYSTEM = (
-    "Rewrite the user question into Bible passage search queries. "
-    "Return ONLY a JSON array of 5 to 8 short strings."
-)
+REWRITE_SYSTEM = """Rewrite the user question into 6 to 10 Bible passage search queries.
+Return ONLY a JSON array of strings.
+
+Rules:
+- Include at least 3 queries that use explicit Bible vocabulary that matches the problem.
+- Include at least 2 queries that are short (2-5 words).
+- Include at least 1 query that includes synonyms.
+
+Examples:
+- forgiveness, forgive, mercy, trespass, reconciliation
+- betrayal, enemy, slander, trust, wisdom about people
+- bitterness, anger, vengeance, justice
+
+Do NOT answer. Output only JSON.
+"""
+
 
 JSON_ARRAY_RE = re.compile(r"\[\s*(?:\".*?\"\s*(?:,\s*\".*?\"\s*)*)?\]s*", re.DOTALL)
 

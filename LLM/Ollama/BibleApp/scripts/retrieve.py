@@ -13,7 +13,7 @@ META_PATH = INDEX_DIR / "bible_asv_meta.pkl"
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 class BibleRetriever:
-    def __init__(self, top_k=8):
+    def __init__(self, top_k=12):
         self.top_k = top_k
         self.index = faiss.read_index(str(FAISS_PATH))
         self.recs = pickle.loads(META_PATH.read_bytes())

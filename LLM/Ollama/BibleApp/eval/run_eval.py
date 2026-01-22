@@ -8,6 +8,7 @@ from scripts.verse_guard import extract_refs, validate_refs
 from scripts.guarded_answer import answer_with_guardrails
 from prompts.bible_centric import BIBLE_SYSTEM_PROMPT
 
+from scripts.query_rewrite import rewrite_queries
 from scripts.ollama_client import ollama_chat
 
 TESTSET = Path("eval/test_questions.jsonl")
@@ -24,13 +25,17 @@ REQUIRED_HEADERS = [
 def format_compliance(answer: str) -> int: 
     return int(all(h in answer for h in REQUIRED_HEADERS))
 
-def groundedness(answer: str) -> float:
-    paras = [p.strip() for p in answer.split("\n\n") if p.strip()]
-
-    if not paras: 
+def groundedness(answer: str, allowed_refs: list[str]) -> float:
+    sections = [s.strip() for s in answer.split("\n\n") if s.strip()]
+    if not sections:
         return 0.0
-    with_refs = sum(1 for p in paras if ":" in p)
-    return with_refs / len(paras)
+    allowed = set(allowed_refs)
+    hits = 0
+    for sec in sections:
+        if any(r in sec for r in allowed):
+            hits += 1
+    return hits / len(sections)
+
 
 def llm_fn(system_prompt, context, question, allowed_refs):
     return ollama_chat(
@@ -57,7 +62,8 @@ def main():
             item = json.loads(line)
             q = item['question']
 
-            passages = retriever.search([q])
+            queries = rewrite_queries(q)
+            passages = retriever.search(queries)
             context, allowed_refs = build_context(passages)
             
             answer, found, invalid, tries = answer_with_guardrails(
@@ -74,7 +80,7 @@ def main():
 
             cite_valid = int(len(invalid) == 0)
             fmt_valid = format_compliance(answer)
-            grd = groundedness(answer)
+            grd = groundedness(answer, allowed_refs)
 
             cite_ok += cite_valid 
             fmt_ok += fmt_valid 

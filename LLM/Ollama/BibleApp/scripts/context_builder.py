@@ -6,7 +6,7 @@ def ref_str(r):
 def format_passage(r):
     return f'{ref_str(r)} ({r["translation"]})\n{r["text"]}'
 
-def build_context(passages, max_passages=6):
+def build_context(passages, max_passages=8):
     selected = passages[:max_passages]
     allowed = [ref_str(p) for p in selected]
     context = "\n\n".join(format_passage(p) for p in selected)

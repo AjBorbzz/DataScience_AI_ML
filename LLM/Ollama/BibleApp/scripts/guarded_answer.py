@@ -1,4 +1,6 @@
 from scripts.verse_guard import extract_refs, validate_refs
+from scripts.format_guard import missing_headers
+
 
 def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_fn, max_tries=2):
     last_answer = None

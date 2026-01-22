@@ -1,8 +1,7 @@
 from scripts.verse_guard import extract_refs, validate_refs
 from scripts.format_guard import missing_headers
 
-
-def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_fn, max_tries=2):
+def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_fn, max_tries=3):
     last_answer = None
     for attempt in range(1, max_tries + 1):
         answer = llm_fn(
@@ -15,21 +14,25 @@ def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_f
 
         found = extract_refs(answer)
         invalid = validate_refs(found, allowed_refs)
+        missing = missing_headers(answer)
 
-        if not invalid:
+        if (not invalid) and (not missing):
             return answer, found, invalid, attempt
 
-        # tighten and retry
-        question = (
-            question
-            + "\n\nSTRICT RULE: You cited references not in the allowed list. "
-              "Regenerate and cite ONLY from the Allowed References list. "
-              "If you cannot, produce Key Scriptures using ONLY those references."
-        )
+        tighten = []
+        if invalid:
+            tighten.append(
+                "You cited references not in the allowed list. Cite ONLY from Allowed References."
+            )
+        if missing:
+            tighten.append(
+                "Your output is missing required sections. Output ALL required headers exactly."
+            )
 
-    # fail-closed (do not return hallucinated citations)
+        question = question + "\n\nSTRICT RULES:\n- " + "\n- ".join(tighten)
+
     return (
-        "Unable to safely answer without citing verses outside the retrieved context.",
+        "Unable to safely generate a properly formatted, citation-valid answer from the retrieved context.",
         extract_refs(last_answer or ""),
         ["fail_closed"],
         max_tries

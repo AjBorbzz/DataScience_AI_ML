@@ -42,7 +42,7 @@ def warn(msg: str) -> None:
 def ok(msg: str) -> None:
     print(f"[OK] {msg}")
 
-ef fmt_ref(r):
+def fmt_ref(r):
     vs, ve = r["verse_start"], r["verse_end"]
     if vs == ve:
         return f'{r["book"]} {r["chapter"]}:{vs}'

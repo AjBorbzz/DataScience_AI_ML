@@ -48,7 +48,7 @@ def llm_fn(system_prompt, context, question, allowed_refs):
     )
 
 def main():
-    retriever = HybridBibleRetriever(top_k_vec=12, top_k_bm25=20)
+    retriever = HybridBibleRetriever(top_k_vec=20, top_k_bm25=40)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     outfile = OUTDIR / f"results_{stamp}.jsonl"
 

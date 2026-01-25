@@ -84,7 +84,7 @@ def main():
             else:
                 context, allowed_refs = build_context(passages)
 
-                answer, found, invalid, tries = answer_with_guardrails(
+                answer, found, invalid, tries, status = answer_with_guardrails(
                         system_prompt=BIBLE_SYSTEM_PROMPT,
                         context=context,
                         question=q,
@@ -115,7 +115,8 @@ def main():
                 "citation_valid": cite_valid,
                 "format_valid": fmt_valid,
                 "groundedness": grd,
-                "answer": answer
+                "answer": answer,
+                "status": status
             }
 
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")

@@ -17,7 +17,7 @@ def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_f
         invalid = validate_refs(found, allowed_refs)
 
         if not invalid:
-            return answer, found, invalid, attempt, "ok"
+            return answer, found, invalid, attempt
 
         # retry once with stricter citation rule
         question = (

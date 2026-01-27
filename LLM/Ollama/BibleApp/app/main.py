@@ -21,6 +21,12 @@ class SearchReq(BaseModel):
     k: int = Field(10, ge=1, le=50)
     use_rewrite: bool = True
 
+class ContextReq(BaseModel):
+    question: str = Field(..., min_length=1)
+    max_passages: int = Field(10, ge=1, le=20)
+    k: int = Field(20, ge=1, le=50)
+    use_rewrite: bool = True
+
 @app.post("/ask")
 def ask(req: AskReq):
     q = req.question.strip()

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+import time
 from scripts.hybrid_retrieve import HybridBibleRetriever
 from scripts.context_builder import build_context
 from scripts.query_rewrite import rewrite_queries
@@ -15,6 +16,10 @@ retriever = HybridBibleRetriever(top_k_vec=20, top_k_bm25=40)
 class AskReq(BaseModel):
     question : str 
 
+class SearchReq(BaseModel):
+    query: str = Field(..., min_length=1)
+    k: int = Field(10, ge=1, le=50)
+    use_rewrite: bool = True
 
 @app.post("/ask")
 def ask(req: AskReq):
@@ -53,3 +58,4 @@ def ask(req: AskReq):
         "found_refs": found,
         "tries": tries
     }
+

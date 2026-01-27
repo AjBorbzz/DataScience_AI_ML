@@ -43,6 +43,68 @@ def health():
         },
     }
 
+@app.post("/search")
+def search(req: SearchReq):
+    """
+    Debug retrieval.
+    - If use_rewrite=True: query is rewritten into multiple retrieval queries.
+    - Returns ranked passages with refs and scores.
+    """
+    t0 = time.time()
+
+    queries = rewrite_queries(req.query) if req.use_rewrite else [req.query]
+    passages = retriever.search(queries)
+
+    # cap to requested k after merge/dedupe
+    passages = passages[: req.k]
+
+    results = []
+    for p in passages:
+        results.append({
+            "ref": ref_str(p),
+            "book": p["book"],
+            "chapter": p["chapter"],
+            "verse_start": p["verse_start"],
+            "verse_end": p["verse_end"],
+            "translation": p.get("translation"),
+            "score": p.get("score"),
+            "source": p.get("source"),  # if hybrid retriever provides it
+            "text": p["text"],
+        })
+
+    return {
+        "queries_used": queries,
+        "count": len(results),
+        "latency_ms": int((time.time() - t0) * 1000),
+        "results": results,
+    }
+
+@app.post("/context")
+def context(req: ContextReq):
+    """
+    Debug the exact model-visible context you will send to LLM.
+    - Runs rewrite (optional) + retrieval + context assembly.
+    - Returns allowed_refs + context string.
+    """
+    t0 = time.time()
+
+    queries = rewrite_queries(req.question) if req.use_rewrite else [req.question]
+
+    # widen retrieval by temporarily overriding breadth:
+    # If your HybridBibleRetriever doesn't accept per-call k, widen via constructor config.
+    passages = retriever.search(queries)
+
+    # build_context will cap to max_passages
+    context_text, allowed_refs = build_context(passages, max_passages=req.max_passages)
+
+    return {
+        "queries_used": queries,
+        "allowed_refs": allowed_refs,
+        "context": context_text,
+        "retrieved_count_total": len(passages),
+        "latency_ms": int((time.time() - t0) * 1000),
+    }
+
 @app.post("/ask")
 def ask(req: AskReq):
     q = req.question.strip()

@@ -27,6 +27,22 @@ class ContextReq(BaseModel):
     k: int = Field(20, ge=1, le=50)
     use_rewrite: bool = True
 
+def ref_str(r: Dict[str, Any]) -> str:
+    vs, ve = r["verse_start"], r["verse_end"]
+    base = f'{r["book"]} {r["chapter"]}:{vs}'
+    return base if vs == ve else f"{base}-{ve}"
+
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "retriever": {
+            "type": retriever.__class__.__name__,
+            "top_k_vec": getattr(retriever, "top_k_vec", None),
+            "top_k_bm25": getattr(retriever, "top_k_bm25", None),
+        },
+    }
+
 @app.post("/ask")
 def ask(req: AskReq):
     q = req.question.strip()

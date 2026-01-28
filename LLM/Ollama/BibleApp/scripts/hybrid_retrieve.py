@@ -50,6 +50,11 @@ class HybridBibleRetriever:
     def search(self, queries):
         seen = set()
         results = []
+        vec_scores = [r["score"] for r in results if r["source"] == "vec"]
+        bm_scores  = [r["score"] for r in results if r["source"] == "bm25"]
+
+        vec_norm = self._minmax_norm(vec_scores)
+        bm_norm  = self._minmax_norm(bm_scores)
 
         for q in queries:
             for idx, score in self._vec_search(q):
@@ -68,4 +73,14 @@ class HybridBibleRetriever:
 
         # sort: vector scores and bm25 scores are different scales; crude but works:
         results.sort(key=lambda r: r["score"], reverse=True)
+        vi = 0
+        bi = 0
+        for r in results:
+            if r["source"] == "vec":
+                r["hybrid_score"] = vec_norm[vi]; vi += 1
+            else:
+                r["hybrid_score"] = bm_norm[bi]; bi += 1
+
+        results.sort(key=lambda r: r["hybrid_score"], reverse=True)
+
         return results

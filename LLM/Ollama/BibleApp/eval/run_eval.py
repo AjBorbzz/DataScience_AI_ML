@@ -128,6 +128,16 @@ def main():
             queries = rewrite_queries(q)
             passages = retriever.search(queries)
 
+            if total == 1:
+                had_passages = 0
+                had_found_preclose = 0
+
+            if passages:
+                had_passages += 1
+
+            if found:
+                had_found_preclose += 1
+
             if not passages:
                 answer = no_retrieval_answer()
                 cite_valid = 1
@@ -197,6 +207,8 @@ def main():
                 "format_valid": fmt_valid,
                 "groundedness": grd,
                 "answer": answer,
+                "had_passages": had_passages,
+                "had_found_preclose": had_found_preclose,
             }
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")
 

@@ -1,4 +1,3 @@
-
 import json
 from pathlib import Path
 from datetime import datetime
@@ -12,13 +11,13 @@ from prompts.bible_centric import BIBLE_SYSTEM_PROMPT
 from scripts.query_rewrite import rewrite_queries
 from scripts.ollama_client import ollama_chat
 
+
 TESTSET = Path("eval/test_questions.jsonl")
-TESTSET_1 = Path("eval/test_questions_1.jsonl")
 OUTDIR = Path("eval/out")
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
 TARGET_GRD = 0.85
-MAX_OUTER_ATTEMPTS = 3  # how many times to re-run guarded generation per question
+MAX_OUTER_ATTEMPTS = 3
 
 REQUIRED_HEADERS = [
     "Biblical Summary:",
@@ -33,10 +32,20 @@ def format_compliance(answer: str) -> int:
     return int(all(h in answer for h in REQUIRED_HEADERS))
 
 
-def groundedness(answer: str, allowed_refs: list[str]) -> float:
-    allowed = set(allowed_refs)
-    lines = [ln.strip() for ln in answer.splitlines()]
+def _norm_ref(r: str) -> str:
+    # normalize "(Luke 6:11-15)" -> "Luke 6:11-15"
+    r = (r or "").strip()
+    if r.startswith("(") and r.endswith(")"):
+        r = r[1:-1].strip()
+    return " ".join(r.split())
 
+
+def groundedness(answer: str, allowed_refs: list[str]) -> float:
+    allowed = {_norm_ref(r) for r in (allowed_refs or [])}
+    if not allowed:
+        return 0.0
+
+    lines = [ln.strip() for ln in answer.splitlines()]
     content_lines: list[str] = []
     for ln in lines:
         if not ln:
@@ -52,13 +61,11 @@ def groundedness(answer: str, allowed_refs: list[str]) -> float:
 
     hits = 0
     for ln in content_lines:
-        # parse refs from the line the same way you parse from the whole answer
-        refs_in_line = set(extract_refs(ln))
+        refs_in_line = {_norm_ref(r) for r in extract_refs(ln)}
         if refs_in_line & allowed:
             hits += 1
 
     return hits / len(content_lines)
-
 
 
 def llm_fn(system_prompt: str, context: str, question: str, allowed_refs: list[str]) -> str:
@@ -74,7 +81,7 @@ def llm_fn(system_prompt: str, context: str, question: str, allowed_refs: list[s
 def no_retrieval_answer() -> str:
     return (
         "Biblical Summary:\n"
-        "Scripture does address this topic, but no relevant passages were retrieved for this question.\n\n"
+        "No relevant passages were retrieved for this question.\n\n"
         "Key Scriptures:\n"
         "- (none retrieved)\n\n"
         "Explanation:\n"
@@ -84,7 +91,7 @@ def no_retrieval_answer() -> str:
     )
 
 
-def fail_closed_answer() -> str:
+def fail_closed_groundedness_answer() -> str:
     return (
         "Biblical Summary:\n"
         "Unable to answer with required citation density using the retrieved passages.\n\n"
@@ -110,37 +117,21 @@ def main():
     answered = 0
     grounded_sum_answered = 0.0
 
-    with TESTSET_1.open("r", encoding="utf-8") as f, outfile.open("w", encoding="utf-8") as out:
+    with TESTSET.open("r", encoding="utf-8") as f, outfile.open("w", encoding="utf-8") as out:
         for line in f:
             total += 1
             item = json.loads(line)
             q = item["question"]
 
-            # Defaults per record
-            answer = ""
-            allowed_refs: list[str] = []
-            found: list[str] = []
-            invalid: list[str] = []
-            cite_valid = 0
-            fmt_valid = 0
-            grd = 0.0
-
             queries = rewrite_queries(q)
             passages = retriever.search(queries)
 
-            if total == 1:
-                had_passages = 0
-                had_found_preclose = 0
-
-            if passages:
-                had_passages += 1
-
-            if found:
-                had_found_preclose += 1
-
             if not passages:
                 answer = no_retrieval_answer()
-                cite_valid = 1
+                allowed_refs = []
+                found = []
+                invalid = []
+                cite_valid = 0  # no citations present -> not valid for your objective
                 fmt_valid = 1
                 grd = 0.0
             else:
@@ -148,7 +139,7 @@ def main():
 
                 best = None  # (answer, found, invalid, cite_valid, fmt_valid, grd)
                 for _ in range(MAX_OUTER_ATTEMPTS):
-                    ans, _, _, _ = answer_with_guardrails(
+                    answer, _, _, _ = answer_with_guardrails(
                         system_prompt=BIBLE_SYSTEM_PROMPT,
                         context=context,
                         question=q,
@@ -157,42 +148,38 @@ def main():
                         max_tries=1,
                     )
 
-                    frefs = list(dict.fromkeys(extract_refs(ans)))
-                    inv = validate_refs(frefs, allowed_refs)
+                    found = list(dict.fromkeys(extract_refs(answer)))
+                    invalid = validate_refs(found, allowed_refs)
 
-                    c_ok = int((len(inv) == 0) and (len(frefs) > 0))
-                    f_ok = format_compliance(ans)
-                    g = groundedness(ans, allowed_refs)
+                    fmt_valid = format_compliance(answer)
+                    grd = groundedness(answer, allowed_refs)
 
-                    if best is None or g > best[5]:
-                        best = (ans, frefs, inv, c_ok, f_ok, g)
+                    # IMPORTANT: require at least 1 ref found, otherwise "citation_valid" is meaningless
+                    cite_valid = int(len(found) > 0 and len(invalid) == 0)
 
-                    if c_ok and f_ok and g >= TARGET_GRD:
-                        best = (ans, frefs, inv, c_ok, f_ok, g)
+                    cand = (answer, found, invalid, cite_valid, fmt_valid, grd)
+                    if best is None or grd > best[-1]:
+                        best = cand
+
+                    if cite_valid and fmt_valid and grd >= TARGET_GRD:
                         break
 
-                if best is None:
-                    answer = fail_closed_answer()
-                    cite_valid = 1
-                    fmt_valid = 1
-                    grd = 0.0
+                answer, found, invalid, cite_valid, fmt_valid, grd = best
+
+                if grd < TARGET_GRD:
+                    # keep your current behavior: fail closed
+                    answer = fail_closed_groundedness_answer()
                     found = []
                     invalid = []
-                else:
-                    answer, found, invalid, cite_valid, fmt_valid, grd = best
-                    if grd < TARGET_GRD:
-                        answer = fail_closed_answer()
-                        cite_valid = 1
-                        fmt_valid = 1
-                        grd = 0.0
-                        found = []
-                        invalid = []
+                    cite_valid = 0
+                    fmt_valid = 1
+                    grd = 0.0
 
             cite_ok += cite_valid
             fmt_ok += fmt_valid
             grounded_sum_all += grd
 
-            if passages and found:
+            if passages and len(found) > 0:
                 answered += 1
                 grounded_sum_answered += grd
 
@@ -200,6 +187,8 @@ def main():
                 "id": item.get("id"),
                 "category": item.get("category"),
                 "question": q,
+                "queries": queries,
+                "retrieved_count": len(passages) if passages else 0,
                 "allowed_refs": allowed_refs,
                 "found_refs": found,
                 "invalid_refs": invalid,
@@ -207,18 +196,16 @@ def main():
                 "format_valid": fmt_valid,
                 "groundedness": grd,
                 "answer": answer,
-                "had_passages": had_passages,
-                "had_found_preclose": had_found_preclose,
             }
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
     summary = {
         "total": total,
-        "citation_valid_rate": (cite_ok / total) if total else 0.0,
-        "format_valid_rate": (fmt_ok / total) if total else 0.0,
-        "avg_groundedness_all": (grounded_sum_all / total) if total else 0.0,
-        "avg_groundedness_answered_only": (grounded_sum_answered / answered) if answered else 0.0,
-        "answered_rate": (answered / total) if total else 0.0,
+        "citation_valid_rate": cite_ok / total if total else 0.0,
+        "format_valid_rate": fmt_ok / total if total else 0.0,
+        "avg_groundedness_all": grounded_sum_all / total if total else 0.0,
+        "avg_groundedness_answered_only": grounded_sum_answered / answered if answered else 0.0,
+        "answered_rate": answered / total if total else 0.0,
     }
 
     print("SUMMARY")
@@ -228,4 +215,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

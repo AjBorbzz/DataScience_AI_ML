@@ -42,4 +42,11 @@ Wisdom Applications:
 
 (Optional) Closing Prayer:
 <short prayer grounded in the cited Scripture>
+
+Hard rules:
+- Every non-empty line under Biblical Summary, Explanation, and Wisdom Applications MUST include at least one reference from Allowed Refs.
+- Format for refs: (BOOK CH:V-V). Example: (Luke 6:11-15)
+- Key Scriptures lines must be: "- REF — <tight paraphrase>" and include the same REF.
+- No line may contain a reference not in Allowed Refs.
+- If you cannot comply, output the fail-closed template with (none retrieved).
 """

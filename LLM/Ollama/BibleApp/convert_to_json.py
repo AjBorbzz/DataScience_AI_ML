@@ -26,7 +26,7 @@ def main():
                     "chapter": ch,
                     "verse_start": vs,
                     "verse_end": ve,
-                    "translation": "KJV",
+                    "translation": "ASV",
                     "text": text,
                 }
                 output.write(json.dumps(rec, ensure_ascii=False) + "\n")

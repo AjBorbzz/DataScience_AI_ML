@@ -160,7 +160,7 @@ def main():
                     frefs = list(dict.fromkeys(extract_refs(ans)))
                     inv = validate_refs(frefs, allowed_refs)
 
-                    c_ok = int(len(inv) == 0)
+                    c_ok = int((len(inv) == 0) and (len(frefs) > 0))
                     f_ok = format_compliance(ans)
                     g = groundedness(ans, allowed_refs)
 

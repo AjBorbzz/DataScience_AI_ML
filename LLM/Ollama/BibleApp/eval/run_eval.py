@@ -13,6 +13,7 @@ from scripts.query_rewrite import rewrite_queries
 from scripts.ollama_client import ollama_chat
 
 TESTSET = Path("eval/test_questions.jsonl")
+TESTSET_1 = Path("eval/test_questions_1.jsonl")
 OUTDIR = Path("eval/out")
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
@@ -51,9 +52,13 @@ def groundedness(answer: str, allowed_refs: list[str]) -> float:
 
     hits = 0
     for ln in content_lines:
-        if any(r in ln for r in allowed):
+        # parse refs from the line the same way you parse from the whole answer
+        refs_in_line = set(extract_refs(ln))
+        if refs_in_line & allowed:
             hits += 1
+
     return hits / len(content_lines)
+
 
 
 def llm_fn(system_prompt: str, context: str, question: str, allowed_refs: list[str]) -> str:
@@ -105,7 +110,7 @@ def main():
     answered = 0
     grounded_sum_answered = 0.0
 
-    with TESTSET.open("r", encoding="utf-8") as f, outfile.open("w", encoding="utf-8") as out:
+    with TESTSET_1.open("r", encoding="utf-8") as f, outfile.open("w", encoding="utf-8") as out:
         for line in f:
             total += 1
             item = json.loads(line)

@@ -33,6 +33,14 @@ class HybridBibleRetriever:
             if idx >= 0:
                 out.append((idx, float(score)))
         return out
+    
+    def _minmax_norm(vals):
+        if not vals:
+            return []
+        lo, hi = min(vals), max(vals)
+        if hi - lo < 1e-9:
+            return [0.0 for _ in vals]
+        return [(v - lo) / (hi - lo) for v in vals]
 
     def _bm25_search(self, q):
         scores = self.bm25.get_scores(q.lower().split())

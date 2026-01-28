@@ -41,6 +41,7 @@ def groundedness(answer: str, allowed_refs: list[str]) -> float:
             continue
         if ln.lower() in {"- (none)", "- (none retrieved)"}:
             continue
+        content_lines.append(ln)
 
     if not content_lines:
         return 0.0
@@ -92,31 +93,31 @@ def main():
                     "Wisdom Applications:\n"
                     "- Re-run with improved retrieval queries.\n"
                 )
+                allowed_refs = []
+                found = []
+                invalid = []
                 cite_valid = 1
                 fmt_valid = 1
-                grd = 0
+                grd = 0.0
             else:
                 context, allowed_refs = build_context(passages)
                 
                 answer = ""
                 found = []
                 invalid = []
-                tries = 0
 
                 for _ in range(3):
-                    tries += 1
-                    answer, found, invalid, tries = answer_with_guardrails(
+                    answer, _, _, _ = answer_with_guardrails(
                         system_prompt=BIBLE_SYSTEM_PROMPT,
                         context=context,
                         question=q,
                         allowed_refs=allowed_refs,
                         llm_fn=llm_fn,
-                        max_tries=1
+                        max_tries=1,
                     )
 
 
-                    found = extract_refs(answer)
-                    found = list(dict.fromkeys(found))
+                    found = list(dict.fromkeys(extract_refs(answer)))
                     invalid = validate_refs(found, allowed_refs)
 
                     cite_valid = int(len(invalid) == 0)
@@ -126,7 +127,7 @@ def main():
                     if cite_valid and fmt_valid and grd >= TARGET_GRD:
                         break
                 
-                if not answer or groundedness(answer, allowed_refs) < TARGET_GRD:
+                if (not answer) or (grd < TARGET_GRD):
                     answer = (
                         "Biblical Summary:\n"
                         "Unable to answer with required citation density using the retrieved passages.\n\n"
@@ -147,6 +148,10 @@ def main():
             fmt_ok += fmt_valid 
             grounded_sum += grd 
 
+            if passages and found:
+                answered += 1
+                grounded_sum_answered += grd
+
             rec = {
                 "id": item["id"],
                 "category": item["category"],
@@ -163,22 +168,15 @@ def main():
 
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")
 
-    answered = 0
-    grounded_sum_answered = 0.0
-
-
-    if passages and found:  # treat as "answered"
-        answered += 1
-        grounded_sum_answered += grd
 
     summary = {
-    "total": total,
-    "citation_valid_rate": cite_ok/ total if total else 0.0,
-    "format_valid_rate": fmt_ok / total if total else 0.0,
-    "avg_groundedness_all": grounded_sum / total if total else 0.0,
-    "avg_groundedness_answered_only": grounded_sum_answered / answered if answered else 0.0,
-    "answered_rate": answered / total if total else 0.0
-}
+        "total": total,
+        "citation_valid_rate": cite_ok / total if total else 0.0,
+        "format_valid_rate": fmt_ok / total if total else 0.0,
+        "avg_groundedness_all": grounded_sum / total if total else 0.0,
+        "avg_groundedness_answered_only": grounded_sum_answered / answered if answered else 0.0,
+        "answered_rate": answered / total if total else 0.0,
+    }
 
     print("SUMMARY")
     for k,v in summary.items():

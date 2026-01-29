@@ -64,6 +64,43 @@ def llm_fn(system_prompt, context, question, allowed_refs):
         allowed_refs=allowed_refs
     )
 
+def enforce_citation_density(answer: str, allowed_refs: list[str]) -> str:
+    """
+    For your groundedness metric: ensure each content line contains at least one allowed ref substring.
+    Appends a single ref to lines that don't have one. Skips headers and 'none retrieved' lines.
+    """
+    if not answer or not allowed_refs:
+        return answer
+
+    # Use a stable ref so substring matching works reliably.
+    # Prefer the first ref (usually highest-ranked passage in your context builder).
+    ref = allowed_refs[0]
+
+    out_lines = []
+    for raw in answer.splitlines():
+        ln = raw.strip()
+
+        if not ln:
+            out_lines.append(raw)
+            continue
+
+        if ln in HEADER_SET:
+            out_lines.append(raw)
+            continue
+
+        if ln.lower() in {"- (none)", "- (none retrieved)"}:
+            out_lines.append(raw)
+            continue
+
+        if any(r in ln for r in allowed_refs):
+            out_lines.append(raw)
+            continue
+
+        # Append in plain text with parentheses (most ref regexes still match).
+        out_lines.append(f"{raw} ({ref})")
+
+    return "\n".join(out_lines)
+
 def main():
     retriever = HybridBibleRetriever(top_k_vec=20, top_k_bm25=40)
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")

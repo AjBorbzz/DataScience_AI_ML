@@ -16,6 +16,9 @@ TESTSET = Path("eval/test_questions.jsonl")
 OUTDIR = Path("eval/out")
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
+TARGET_GRD = 0.75
+MAX_OUTER_RETRIES = 3
+
 REQUIRED_HEADERS = [
     "Biblical Summary:",
     "Key Scriptures:",
@@ -23,19 +26,33 @@ REQUIRED_HEADERS = [
     "Wisdom Applications:",
 ]
 
+HEADER_SET = set(REQUIRED_HEADERS)
+
 def format_compliance(answer: str) -> int: 
     return int(all(h in answer for h in REQUIRED_HEADERS))
 
 def groundedness(answer: str, allowed_refs: list[str]) -> float:
-    sections = [s.strip() for s in answer.split("\n\n") if s.strip()]
-    if not sections:
+    allowed = set(allowed_refs or [])
+    lines = [ln.strip() for ln in answer.splitlines()]
+
+    content_lines = []
+    for ln in lines:
+        if not ln:
+            continue
+        if ln in HEADER_SET:
+            continue
+        if ln.lower() in {"- (none)", "- (none retrieved)"}:
+            continue
+        content_lines.append(ln)
+
+    if not content_lines or not allowed:
         return 0.0
-    allowed = set(allowed_refs)
+
     hits = 0
-    for sec in sections:
-        if any(r in sec for r in allowed):
+    for ln in content_lines:
+        if any(r in ln for r in allowed):
             hits += 1
-    return hits / len(sections)
+    return hits / len(content_lines)
 
 
 def llm_fn(system_prompt, context, question, allowed_refs):

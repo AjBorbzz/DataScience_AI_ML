@@ -42,4 +42,10 @@ Wisdom Applications:
 
 (Optional) Closing Prayer:
 <short prayer grounded in the cited Scripture>
+
+FORMAT ENFORCEMENT:
+- Every sentence and every bullet MUST end with exactly one allowed scripture reference in parentheses, like (John 3:16).
+- Do not write any sentence/bullet without a reference.
+- Do not include more than one reference per sentence/bullet.
+- Use ONLY references from the allowed list.
 """

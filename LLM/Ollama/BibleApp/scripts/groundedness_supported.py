@@ -1,9 +1,8 @@
 import re
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from scripts.verse_guard import extract_refs
 
 SENT_SPLIT = re.compile(r'(?<=[.!?])\s+')
-
 HEADER_SET = {
     "Biblical Summary:",
     "Key Scriptures:",
@@ -19,60 +18,70 @@ def split_claims(answer: str) -> List[str]:
             continue
         if t in HEADER_SET:
             continue
-        if t.startswith("-"):
-            continue
+        # keep bullets too; bullets are often the “claims”
         lines.append(t)
 
     claims = []
     for ln in lines:
-        claims.extend(
-            [s.strip() for s in SENT_SPLIT.split(ln) if len(s.strip()) >= 20]
-        )
+        claims.extend([s.strip() for s in SENT_SPLIT.split(ln) if len(s.strip()) >= 15])
     return claims
 
+def passage_ref(p: Dict) -> str:
+    b = p["book"]; c = p["chapter"]; s = p["verse_start"]; e = p["verse_end"]
+    return f"{b} {c}:{s}" + (f"-{e}" if e != s else "")
+
+def normalize_ref(ref: str) -> Tuple[str, int, int]:
+    # expects format "Book N:M" or "Book N:M-K"
+    # keep this simple; your validate_refs already enforces format
+    book_ch, vv = ref.rsplit(" ", 1)
+    ch, rest = vv.split(":")
+    if "-" in rest:
+        a, b = rest.split("-")
+        return (book_ch.strip(), int(ch), int(a))
+    return (book_ch.strip(), int(ch), int(rest))
+
+def build_evidence_map(passages: List[Dict]) -> Dict[str, str]:
+    m = {}
+    for p in passages:
+        r = passage_ref(p)
+        m[r] = p["text"]
+    return m
 
 def groundedness_supported(answer: str, passages: List[Dict], allowed_refs: List[str]) -> float:
     claims = split_claims(answer)
-    if not claims or not passages:
+    if not claims:
         return 0.0
 
     allowed = set(allowed_refs)
+    evidence = build_evidence_map(passages)
 
-    ev_texts = []
-    ev_refs = []
-
-    for p in passages:
-        ev_texts.append(p["text"])
-        ev_refs.append(
-            f'{p["book"]} {p["chapter"]}:{p["verse_start"]}'
-            + (f'-{p["verse_end"]}' if p["verse_end"] != p["verse_start"] else "")
-        )
-
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
-
-    vec = TfidfVectorizer(
-        stop_words="english",
-        ngram_range=(1, 2),
-        min_df=1,
-    )
-    X = vec.fit_transform(ev_texts)
-
+    # Support rule:
+    # A claim counts as supported if it contains >=1 allowed ref, AND
+    # the claim shares enough lexical overlap with the evidence passage text for that ref.
+    # (lexical overlap beats TF-IDF here because refs are the anchor)
     supported = 0
+    total = 0
 
     for c in claims:
-        cited = [r for r in extract_refs(c) if r in allowed]
-        if not cited:
+        refs = [r for r in extract_refs(c) if r in allowed]
+        if not refs:
             continue
+        total += 1
 
-        qc = vec.transform([c])
-        sims = cosine_similarity(qc, X).ravel()
-        j = int(sims.argmax())
-        best_sim = float(sims[j])
+        ok = False
+        c_tokens = set(re.findall(r"[a-zA-Z']+", c.lower()))
+        for r in refs:
+            ev = evidence.get(r)
+            if not ev:
+                continue
+            ev_tokens = set(re.findall(r"[a-zA-Z']+", ev.lower()))
+            overlap = len(c_tokens & ev_tokens)
+            # tune this threshold; start low
+            if overlap >= 4:
+                ok = True
+                break
 
-        if best_sim >= 0.20:
-            evr = ev_refs[j]
-            if any(r.split(":")[0] in evr or r in evr for r in cited):
-                supported += 1
+        if ok:
+            supported += 1
 
-    return supported / max(1, len(claims))
+    return supported / max(1, total)

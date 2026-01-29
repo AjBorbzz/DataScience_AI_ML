@@ -1,4 +1,5 @@
 from scripts.verse_guard import extract_refs, validate_refs
+import re
 
 def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_fn, max_tries=2):
     last_answer = None
@@ -40,3 +41,30 @@ def answer_with_guardrails(system_prompt, context, question, allowed_refs, llm_f
         ["fail_closed_citation"],
         max_tries
     )
+
+
+SENT_SPLIT = re.compile(r'(?<=[.!?])\s+')
+HEADERS = {"Biblical Summary:", "Key Scriptures:", "Explanation:", "Wisdom Applications:"}
+
+def all_claims_have_one_ref(answer: str, allowed_refs: list[str]) -> bool:
+    allowed = set(allowed_refs)
+    lines = [ln.strip() for ln in answer.splitlines() if ln.strip()]
+    content = []
+    for ln in lines:
+        if ln in HEADERS:
+            continue
+        content.append(ln)
+
+    # treat bullets as claims too
+    claims = []
+    for ln in content:
+        claims.extend([s.strip() for s in SENT_SPLIT.split(ln) if len(s.strip()) >= 10])
+
+    if not claims:
+        return False
+
+    for c in claims:
+        refs = [r for r in extract_refs(c) if r in allowed]
+        if len(refs) != 1:
+            return False
+    return True

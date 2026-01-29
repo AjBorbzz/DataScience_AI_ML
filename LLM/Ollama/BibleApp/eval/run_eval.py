@@ -12,12 +12,14 @@ from prompts.bible_centric import BIBLE_SYSTEM_PROMPT
 from scripts.query_rewrite import rewrite_queries
 from scripts.ollama_client import ollama_chat
 
+from scripts.groundedness_supported import groundedness_supported
+
 TESTSET = Path("eval/test_questions.jsonl")
 OUTDIR = Path("eval/out")
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
 TARGET_GRD = 0.75
-MAX_OUTER_RETRIES = 3
+MAX_OUTER_TRIES = 3
 
 REQUIRED_HEADERS = [
     "Biblical Summary:",
@@ -179,7 +181,9 @@ def main():
                     # IMPORTANT: citation_valid must require at least one ref
                     cite_valid_try = int(len(found_try) > 0 and len(invalid_try) == 0)
                     fmt_valid_try = format_compliance(densified)
-                    grd_try = groundedness(densified, allowed_refs)
+                    # grd_try = groundedness(densified, allowed_refs)
+                    grd_try = groundedness_supported(densified, passages, allowed_refs)
+
 
                     # Track best
                     score_tuple = (grd_try, cite_valid_try, fmt_valid_try)

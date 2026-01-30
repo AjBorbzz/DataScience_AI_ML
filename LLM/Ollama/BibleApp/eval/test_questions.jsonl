@@ -22,16 +22,12 @@
 {"id":"faith_004","category":"faith","question":"How does the Bible describe faith that perseveres without visible answers?"}
 {"id":"prayer_003","category":"prayer","question":"What does the Bible say about prayer when words fail?"}
 {"id":"prayer_004","category":"prayer","question":"How does Scripture address unanswered prayer over long periods?"}
-{"id":"money_005","category":"money","question":"How does the Bible warn against placing security in income?"}
 {"id":"money_006","category":"money","question":"What biblical principles govern generosity during personal scarcity?"}
 {"id":"anxiety_004","category":"anxiety","question":"How does Scripture confront anxiety about the future?"}
-{"id":"anxiety_005","category":"anxiety","question":"What does the Bible teach about peace amid ongoing pressure?"}
 {"id":"forgiveness_004","category":"forgiveness","question":"What does Scripture say about forgiving repeated offenses?"}
-{"id":"forgiveness_005","category":"forgiveness","question":"How does the Bible frame forgiveness as obedience rather than emotion?"}
 {"id":"work_004","category":"work","question":"What does Scripture teach about diligence when work feels meaningless?"}
 {"id":"work_005","category":"work","question":"How should believers view success and recognition at work?"}
 {"id":"guidance_004","category":"guidance","question":"How does the Bible instruct believers to seek counsel wisely?"}
-{"id":"guidance_005","category":"guidance","question":"What does Scripture say about waiting when direction is unclear?"}
 {"id":"suffering_003","category":"suffering","question":"How does the Bible address suffering that appears unjust?"}
 {"id":"suffering_004","category":"suffering","question":"What does Scripture reveal about God’s presence in suffering?"}
 {"id":"obedience_003","category":"obedience","question":"How does Scripture address obedience without immediate reward?"}
@@ -52,5 +48,4 @@
 {"id":"repentance_002","category":"repentance","question":"What does the Bible say about repentance after repeated failure?"}
 {"id":"love_001","category":"love","question":"How does Scripture define love beyond emotion?"}
 {"id":"love_002","category":"love","question":"What does the Bible teach about loving difficult people?"}
-{"id":"obedience_005","category":"obedience","question":"How does Scripture connect obedience and trust?"}
-{"id":"faith_005","category":"faith","question":"What does the Bible teach about faith tested by delay?"}
+

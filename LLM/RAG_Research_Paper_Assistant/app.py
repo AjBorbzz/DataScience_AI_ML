@@ -1,15 +1,23 @@
-import os
-import sys
+from __future__ import annotations
+
 import hashlib
-import PyPDF2
+import os
+import re
+from dataclasses import dataclass
+from typing import Any, Iterable
+
+import chromadb
 import streamlit as st
 from dotenv import load_dotenv
-from huggingface_hub import login
-from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.tools import ArxivQueryRun
-import chromadb
 from litellm import completion
+from sentence_transformers import SentenceTransformer
+
+try:
+    from pypdf import PdfReader
+except ImportError:  # fallback for older environments
+    from PyPDF2 import PdfReader  # type: ignore
 
 # Fix for torch.classes error
 sys.modules['torch.classes'].__path__ = []

@@ -99,6 +99,14 @@ async def root():
         }
     }
 
+@app.post("/ask/stream")
+async def ask_stream(request: QuestionRequest):
+    async def token_generator():
+        async for token in ollama_stream(request.question, request.model):
+            yield token
+
+    return StreamingResponse(token_generator(), media_type="text/plain")
+
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint"""

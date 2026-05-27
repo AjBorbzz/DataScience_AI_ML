@@ -55,3 +55,4 @@ def safe_json_str(incident_json: dict[str, Any], max_chars: int = 8_000) -> str:
         )
         return s[:max_chars] + "... [TRUNCATED]"
     return s
+

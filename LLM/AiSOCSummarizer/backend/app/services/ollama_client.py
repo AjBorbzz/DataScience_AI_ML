@@ -87,3 +87,18 @@ async def generate_json(prompt: str, system: str = "", num_predict: int = 1024) 
     Generate and parse a JSON response from Ollama, retrying on bad JSON
     """
     raw = await generate(prompt, system, num_predict=num_predict)
+    text = re.sub(r"```(?:json)?\s*", "", raw).strip()
+
+    decoder = json.JSONDecodeError()
+    for m in re.finditer(r"[{\[]", text):
+        try:
+            obj, _ = decoder.raw_decode(text, m.start())
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            continue 
+
+    logger.warning("LLM response contained no valid JSON object; retrying.")
+    raise MalformedLLMOutputError("No valid JSON object found in LLM Response.")
+
+

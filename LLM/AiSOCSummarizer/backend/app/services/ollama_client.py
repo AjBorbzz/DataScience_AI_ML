@@ -101,4 +101,16 @@ async def generate_json(prompt: str, system: str = "", num_predict: int = 1024) 
     logger.warning("LLM response contained no valid JSON object; retrying.")
     raise MalformedLLMOutputError("No valid JSON object found in LLM Response.")
 
-
+async def check_health() -> tuple[bool, bool]:
+    """Return (ollama_reachable, model_available)"""
+    async with httpx.AsyncClient(timeout=10) as client:
+        try:
+            resp = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            resp.raise_for_status() 
+        except Exception:
+            return False, False
+    tags = resp.json().get("models", [])
+    model_available = any(
+        t.get("name", "").startswith(MODEL_NAME.split(":")[0]) for t in tags
+    )
+    return True, model_available

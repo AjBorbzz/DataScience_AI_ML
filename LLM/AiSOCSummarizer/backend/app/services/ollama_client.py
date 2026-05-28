@@ -74,3 +74,16 @@ async def generate(prompt: str, system: str="", num_predict: int=1024) -> str:
     if not text:
         raise MalformedLLMOutputError("Ollama returned an empty response.")
     return text
+
+
+@retry(
+    retry=retry_if_exception_type(MalformedLLMOutputError),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=1, max=5),
+    reraise=True
+) 
+async def generate_json(prompt: str, system: str = "", num_predict: int = 1024) -> dict[str, Any]:
+    """
+    Generate and parse a JSON response from Ollama, retrying on bad JSON
+    """
+    raw = await generate(prompt, system, num_predict=num_predict)

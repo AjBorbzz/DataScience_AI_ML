@@ -25,3 +25,46 @@ class ExtractedContext(BaseModel):
     related_events: list[str] = Field(default_factory=list)
     remediation_actions: list[str] = Field(default_factory=list)
     raw_text : str = ""
+
+
+class ThreatIntelAssessment(BaseModel):
+    suspicious_indicators: list[str] = Field(default_factory=list)
+    known_bad_signals: list[str] = Field(default_factory=list)
+    malware_references: list[str] = Field(default_factory=list)
+    c2_indicators: list[str] = Field(default_factory=list)
+    phishing_indicators: list[str] = Field(default_factory=list)
+    dga_like_domains: list[str] = Field(default_factory=list)
+    unknowns: list[str] = Field(default_factory=list)
+    assessment_text: str = ""
+
+
+class SOCAnalystOutput(BaseModel):
+    attack_narrative : str = ""
+    affected_users: list[str] = Field(default_factory=list)
+    affected_hosts: list[str] = Field(default_factory=list)
+    scope: str = ""
+    timeline: str = ""
+    confirmed_facts: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
+
+
+class DetectionResponseOutput(BaseModel):
+    detection_findings: list[str] = Field(default_factory=list)
+    immediate_actions: list[str] = Field(default_factory=list)
+    investigation_actions: list[str] = Field(default_factory=list)
+    containment_actions: list[str] = Field(default_factory=list)
+    remediation_actions: list[str] = Field(default_factory=list) 
+
+
+class BestPracticesOutput(BaseModel):
+    prevention_steps: list[str] = Field(default_factory=list)
+    hardening_steps: list[str] = Field(default_factory=list)
+
+class ConflictReviewOutput(BaseModel):
+    conflicts_found: list[str] = Field(default_factory=list)
+    weak_claims: list[str] = Field(default_factory=list)
+    removed_claims: list[str] = Field(default_factory=list)
+    review_notes: str = ""
+
+
+    

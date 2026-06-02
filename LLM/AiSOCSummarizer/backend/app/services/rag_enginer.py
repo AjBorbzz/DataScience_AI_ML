@@ -9,9 +9,21 @@ logger = get_logger(__name__)
 
 
 ROLE_KEYWORDS: dict[str, list[str]] = {
-    "context_extraction": [],
-    "threat_intel": [],
-    "soc_analyst": [],
+    "context_extraction": [
+        "incident", "severity", "timestamp", "time", "date", "ip","src", "dst",
+        "source", "destination", "domain", "url", "hash", "md5", "sha", "user",
+        "host", "alert", "rule", "enrich", "event", "remediate"
+    ],
+    "threat_intel": [
+        "malware", "c2", "command", "control", "phish", "dga", "reputation",
+        "indicator", "ioc", "threat", "actor", "campaign", "exploit", "payload",
+        "domain", "ip", "hash", "url", "blacklist", "bad", "suspicious"
+    ],
+    "soc_analyst": [
+        "user", "host", "asset", "account", "scope", "timeline", "attack",
+        "lateral", "privilege", "escalate", "persistence", "execution", "access",
+        "login", "process", "network", "connection", "session"
+    ],
     "detection_response": [],
     "best_practices": [],
 }

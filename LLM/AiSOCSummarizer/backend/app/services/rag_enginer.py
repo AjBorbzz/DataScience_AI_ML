@@ -49,3 +49,21 @@ def chunk_text(text: str) -> list[tuple[str, str]]:
 def _score_chunk(chunk: str, keywords: list[str]) -> int:
     lower = chunk.lower()
     return sum(1 for kw in keywords if kw in lower)
+
+def retrieve(
+        chunks: list[tuple[str, str]],
+        role: str,
+        top_k: int = _MAX_CHUNKS
+) -> list[tuple[str, str]]:
+    """Return the top_k most relevant chunks for a given agent role."""
+    keywords = ROLE_KEYWORDS.get(role, [])
+    if not keywords:
+        return chunks[:top_k]
+    
+    scored = [(cid, text, _score_chunk(text, keywords)) for cid, text in chunks]
+    scored.sort(key=lambda x: x[2], reverse=True)
+    results = [(cid, text) for cid, text, _ in scored[:top_k]]
+    logger.info("RAG: retrieved %d chunks for role '%s'.", len(results), role)
+
+    return results 
+

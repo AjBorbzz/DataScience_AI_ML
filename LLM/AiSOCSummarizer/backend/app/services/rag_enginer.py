@@ -51,10 +51,10 @@ def _score_chunk(chunk: str, keywords: list[str]) -> int:
     return sum(1 for kw in keywords if kw in lower)
 
 def retrieve(
-        chunks: list[tuple[str, str]],
-        role: str,
-        top_k: int = _MAX_CHUNKS
-) -> list[tuple[str, str]]:
+                chunks: list[tuple[str, str]],
+                role: str,
+                top_k: int = _MAX_CHUNKS
+            ) -> list[tuple[str, str]]:
     """Return the top_k most relevant chunks for a given agent role."""
     keywords = ROLE_KEYWORDS.get(role, [])
     if not keywords:
@@ -67,3 +67,25 @@ def retrieve(
 
     return results 
 
+def chunks_to_context(
+        flat_map: dict[str, Any],
+        used_values: list[str]
+) -> list[str]:
+    """
+    Given a list of values that appeared in the LLM output,
+    return the JSON paths that contain those values.
+    """
+    evidence: list[str] = []
+    for val in used_values:
+        val_lower = str(val).lower()
+        for path, fval in flat_map.items():
+            if val_lower and val_lower in str(fval).lower():
+                evidence.append(f"{path}: {fval}")
+
+    seen: set[str] = set()
+    unique: list[str] = []
+    for e in evidence:
+        if e not in seen:
+            seen.add(e)
+            unique.append(e)
+    return unique

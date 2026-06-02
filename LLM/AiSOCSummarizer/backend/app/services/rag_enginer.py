@@ -24,8 +24,15 @@ ROLE_KEYWORDS: dict[str, list[str]] = {
         "lateral", "privilege", "escalate", "persistence", "execution", "access",
         "login", "process", "network", "connection", "session"
     ],
-    "detection_response": [],
-    "best_practices": [],
+    "detection_response": [
+        "alert", "rule", "detect", "trigger", "block", "contain", "isolate",
+        "quarantine", "response", "action", "kill", "terminate", "disable",
+        "firewall", "edr", "siem", "telemetry"
+    ],
+    "best_practices": [
+        "patch", "update", "harden", "policy", "control", "mfa", "password",
+        "config", "segment", "monitor", "log", "audit", "backup", "prevent"
+    ],
 }
 
 _MAX_CHUNKS = 4 

@@ -26,3 +26,16 @@ def chunk_text(text: str) -> list[tuple[str, str]]:
     """
 
     lines = text.split("\n")
+    chunks: list[tuple[str, str]] = []
+    current: list[str] = []
+    current_len = 0
+    chunk_idx = 0 
+
+    for line in lines:
+        if current_len + len(line) > _CHUNK_SIZE and current:
+            chunks.append((f"chunk_{chunk_idx}", "\n".join(current)))
+            chunk_idx += 1
+            current = []
+            current_len = 0
+        current.append(line)
+        current_len += len(line) + 1

@@ -39,3 +39,13 @@ def chunk_text(text: str) -> list[tuple[str, str]]:
             current_len = 0
         current.append(line)
         current_len += len(line) + 1
+
+    if current:
+        chunks.append(f"chunk_{chunk_idx}", "\n".join(current))
+
+    logger.info("RAG: split text into %d chunks.", len(chunks))
+    return chunks
+
+def _score_chunk(chunk: str, keywords: list[str]) -> int:
+    lower = chunk.lower()
+    return sum(1 for kw in keywords if kw in lower)

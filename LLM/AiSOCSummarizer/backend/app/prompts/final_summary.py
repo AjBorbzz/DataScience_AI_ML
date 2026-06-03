@@ -79,4 +79,35 @@ def build_prompt(
     }}
 
     CRITICAL RULES:
-    - Every key_finding Must include a non-empty evidence field citing the actual data.
+    - Every key_finding Must include a non-empty evidence field citing the actual data. 
+    - If a claim has no supporting evidence do not include it. 
+    - unkowns_and_gaps must honestly state what data is missing. 
+    - Do NOT fabricate any indicator name, host, user or technique. 
+    - Confidence score is {confidence_score} - embed it exactly as provided. 
+    - output only the json object."""
+
+def build_self_review_prompt(
+        prior_summary: str, 
+        extracted_context: str, 
+        conflict_notes: str,
+) -> str: 
+    return f"""You previously produced a SOC incident summary that scored below the confidence threshold. 
+
+    review and improve it by removing unsupported claims and adding missing uncertainty statements. 
+
+    ORIGINAL SUMMARY:
+    {prior_summary}
+
+    ORIGINAL EXTRACTED CONTEXT (ground truth):
+    {extracted_context} 
+
+    CONFLICT REVIEW NOTES: 
+    {conflict_notes} 
+
+    Instructions:
+    1. Remove any finding whose evidence field is empty or cannot be traced to the extracted context. 
+    2. For any claim that is an assumption, add "(Assumed - Not directly confirmed)" to the finding text. 
+    3. Add any missing items to unknowns_and_gaps. 
+    4. Keep the same JSON structure. Do not add new findings unless they are directly supported. 
+
+    Return the improved JSON Object only. No prose, no markdown fences."""

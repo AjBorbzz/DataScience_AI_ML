@@ -18,7 +18,7 @@ class ExtractedContext(BaseModel):
     urls: list[str] = Field(default_factory=list)
     hashes: list[str] = Field(default_factory=list)
     usernames: list[str] = Field(default_factory=list)
-    hostnamse: list[str] = Field(default_factory=list)
+    hostnames: list[str] = Field(default_factory=list)
     alert_names: list[str] = Field(default_factory=list)
     detection_rules: list[str] = Field(default_factory=list)
     enrichment_results: list[str] = Field(default_factory=list)

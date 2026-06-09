@@ -103,4 +103,21 @@ async def run_pipeline(incident_json: dict[str, Any]) -> IncidentSummary:
 
     logger.info("Pipeline step 3: SOC Analyst")
     soc_context = get_context("soc_analyst")
-    
+    soc_raw = await llm.generate_json(
+        prompt=p_soc.build_prompt(soc_context, ti_str),
+        system=p_soc.SYSTEM,
+    )
+
+    soc = SOCAnalystOutput(
+        attack_narrative=_safe_str(soc_raw.get("attack_narrative")),
+        affected_users=_safe_list(soc_raw.get("affected_users")),
+        affected_hosts=_safe_list(soc_raw.get("affected_hosts")),
+        scope=_safe_str(soc_raw.get("scope")),
+        timeline=_safe_str(soc_raw.get("timeline")),
+        confirmed_facts=_safe_list(soc_raw.get("confirmed_facts")),
+        assumptions=_safe_str(soc_raw.get("assumptions")),
+    )
+
+    soc_str = json.dumps(soc_raw, separators=(",", ":"))
+
+    logger.info("Pipeline step 4: detection and response")

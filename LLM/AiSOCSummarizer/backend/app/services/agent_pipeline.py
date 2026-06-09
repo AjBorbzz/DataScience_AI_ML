@@ -59,3 +59,22 @@ async def run_pipeline(incident_json: dict[str, Any]) -> IncidentSummary:
         prompt=p_ctx.build_prompt(ctx_context),
         system=p_ctx.SYSTEM,
     )
+
+    context = ExtractedContext(
+        incident_name=_safe_str(ctx_raw.get("incident_name")),
+        severity=_safe_str(ctx_raw.get("severity")),
+        timestamps=_safe_list(ctx_raw.get("timestamps")),
+        source_ips=_safe_list(ctx_raw.get("source_ips")),
+        destination_ips=_safe_list(ctx_raw.get("destination_ips")),
+        domains=_safe_list(ctx_raw.get("domains")),
+        urls=_safe_list(ctx_raw.get("urls")),
+        hashes=_safe_list(ctx_raw.get("hashes")),
+        usernames=_safe_list(ctx_raw.get("usernames")),
+        hostnames=_safe_list(ctx_raw.get("hostnames")),
+        alert_names=_safe_list(ctx_raw.get("alert_names")),
+        detection_rules=_safe_list(ctx_raw.get("detection_rules")),
+        enrichment_results=_safe_list(ctx_raw.get("enrichment_results")),
+        relevant_events=_safe_list(ctx_raw.get("relevant_events")),
+        remediation_actions=_safe_list(ctx_raw.get("remediation_actions")),
+        raw_text=_safe_str(ctx_raw.get("raw_text")),
+    )

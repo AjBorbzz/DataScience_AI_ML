@@ -121,3 +121,20 @@ async def run_pipeline(incident_json: dict[str, Any]) -> IncidentSummary:
     soc_str = json.dumps(soc_raw, separators=(",", ":"))
 
     logger.info("Pipeline step 4: detection and response")
+    dr_context = get_context("detection_response")
+    dr_raw = await llm.generate_json(
+        prompt=p_dr.build_prompt(dr_context, soc_str),
+        system=p_dr.SYSTEM,
+    )
+
+    dr = DetectionResponseOutput(
+        detection_findings=_safe_list(dr_raw.get('detection_findings')),
+        immediate_actions=_safe_list(dr_raw.get('immediate_actions')),
+        investigation_actions=_safe_list(dr_raw.get('investigation_actions')),
+        containment_actions=_safe_list(dr_raw.get('containment_actions')),
+        remediation_actions=_safe_list(dr_raw.get('remediation_actions')),
+    )
+
+    dr_str = json.dumps(dr_raw, separators=(",", ":"))
+
+    

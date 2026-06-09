@@ -85,10 +85,13 @@ def retrieve(
     logger.info("RAG: retrieved %d chunks for role '%s'.", len(results), role)
     return results 
 
-def chunks_to_context(
-        flat_map: dict[str, Any],
-        used_values: list[str]
-) -> list[str]:
+def chunks_to_context(chunks: list[tuple[str, str]]) -> str:
+    return "\n\n---\n\n".join(f"[{cid}]\n{text}" for cid, text in chunks)
+
+def extract_evidence_paths(
+                                flat_map: dict[str, Any],
+                                used_values: list[str]
+                        ) -> list[str]:
     """
     Given a list of values that appeared in the LLM output,
     return the JSON paths that contain those values.

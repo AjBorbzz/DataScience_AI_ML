@@ -137,4 +137,48 @@ async def run_pipeline(incident_json: dict[str, Any]) -> IncidentSummary:
 
     dr_str = json.dumps(dr_raw, separators=(",", ":"))
 
-    
+    logger.info("Pipeline step 5: best practices.")
+    bp_context = get_context("best_practices")
+    bp_raw = await llm.generate_json(
+        prompt=p_bp.build_prompt(bp_context, soc_str, dr_str),
+        system=p_bp.SYSTEM,
+    )
+    bp = BestPracticesOutput(
+        prevention_steps=_safe_list(bp_raw.get('prevention_steps')),
+        hardening_steps=_safe_list(bp_raw.get('prevention_steps')),
+    )
+    bp_str = json.dumps(bp_raw, separators=(",", ":"))
+
+    logger.info("Pipeline step 6: conflict review")
+    cr_raw = await llm.generate_json(
+        prompt=p_cr.build_prompt(context_str, ti_str, soc_str, dr_str, bp_str),
+        system=p_cr.SYSTEM
+    )
+    cr = ConflictReviewOutput(
+        conflicts_found=_safe_list(cr_raw.get('conflicts_found')),
+        weak_claims=_safe_list(cr_raw.get('weak_claims')),
+        removed_claims=_safe_list(cr_raw.get('removed_claims')),
+        review_notes=_safe_str(cr_raw.get("review_notes")),
+    )
+
+    cr_str = json.dumps(cr_raw, separators=(",", ":"))
+
+    all_values = (
+        context.source_ips + context.destination_ips + context.domains +
+        context.usernames + context.hostnames + context.hashes + 
+        context.alert_names + [context.incident_name, context.severity]
+    )
+
+    evidence_paths = rag.extract_evidence_paths(flat_map, [v for v in all_values if v])
+
+    # for confidence calculations
+    stub_summary = IncidentSummary(
+        executive_summary="",
+        incident_overview="",
+        attack_narrative=soc.attack_narrative,
+        threat_intelligence_assessment=ti.assessment_text,
+        confidence_score=0,
+        confidence_reasoning="",
+        evidence_used=evidence_paths,
+        key_findings=[]
+    )

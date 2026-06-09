@@ -83,7 +83,6 @@ def retrieve(
     scored.sort(key=lambda x: x[2], reverse=True)
     results = [(cid, text) for cid, text, _ in scored[:top_k]]
     logger.info("RAG: retrieved %d chunks for role '%s'.", len(results), role)
-
     return results 
 
 def chunks_to_context(

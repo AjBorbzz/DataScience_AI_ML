@@ -78,3 +78,29 @@ async def run_pipeline(incident_json: dict[str, Any]) -> IncidentSummary:
         remediation_actions=_safe_list(ctx_raw.get("remediation_actions")),
         raw_text=_safe_str(ctx_raw.get("raw_text")),
     )
+
+    context_str = json.dumps(ctx_raw, separators=(",", ":"))
+
+    logger.info("Pipeline step 2: threat intelligence.")
+    ti_context = get_context("threat_intel")
+    ti_raw = await llm.generate_json(
+        prompt=p_ti.build_prompt(ti_context),
+        system=p_ti.SYSTEM
+    )
+
+    ti = ThreatIntelAssessment(
+        suspicious_indicators=_safe_list(ti_raw.get("suspicious_indicators")),
+        known_bad_signals=_safe_list(ti_raw.get("known_bad_signals")),
+        malware_references=_safe_list(ti_raw.get("malware_references")),
+        c2_indicators=_safe_list(ti_raw.get("c2_indicators")),
+        phishing_indicators=_safe_list(ti_raw.get("phishing_indicators")),
+        dga_like_domains=_safe_list(ti_raw.get("dga_like_domains")),
+        unknowns=_safe_list(ti_raw.get("unknowns")),
+        assessment_text=_safe_str(ti_raw.get("assessment_text")),
+    )
+
+    ti_str = json.dumps(ti_raw, separators=(",", ":"))
+
+    logger.info("Pipeline step 3: SOC Analyst")
+    soc_context = get_context("soc_analyst")
+    
